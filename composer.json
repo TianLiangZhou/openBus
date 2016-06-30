@@ -1,0 +1,21 @@
+{
+    "name": "gongjiaotong/gongjiaotong",
+    "description": "description_text",
+    "minimum-stability": "stable",
+    "license": "apache",
+    "authors": [
+        {
+            "name": "zhoutianliang",
+            "email": "mfkgdyve456@126.com"
+        }
+    ],
+    "require": {
+        "slim/slim": "^3.0",
+        "monolog/monolog": "^1.19"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}
