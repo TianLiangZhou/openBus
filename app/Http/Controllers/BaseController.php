@@ -38,7 +38,7 @@ class BaseController
         sort($weixin, SORT_STRING);
         $sign = sha1(implode($weixin, ''));
         if ($sign == $query['signature']) {
-            return $query['signature'];
+            return $query['echostr'];
         }
         return 'failed';
     }
