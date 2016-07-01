@@ -3,3 +3,4 @@
 /.idea
 /storage/route.json
 /*.lock
+/config/app.php
