@@ -1,5 +1,5 @@
 <?php
-error_reporting(-1);
+error_reporting(0);
 define('APP_PATH', dirname(__DIR__));
 define('APP_CONFIG', APP_PATH . '/config');
 define('APP_STORAGE', APP_PATH . '/storage');
