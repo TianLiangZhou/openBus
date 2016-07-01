@@ -11,10 +11,18 @@ use Slim\Http\Response;
  * @author zhoutianliang <mfkgdyve@gmail.com>
  * @package App\Http\Controllers
  */
-class BusController
+class BusController extends BaseController
 {
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
     public function receive(Request $request, Response $response)
     {
-        
+        $query = $request->getQueryParams();
+        $sign = $this->verifyWeixin($query);
+        $response->getBody()->write($sign);
+        return $response;
     }
 }

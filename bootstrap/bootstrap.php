@@ -1,4 +1,5 @@
 <?php
+error_reporting(-1);
 define('APP_PATH', dirname(__DIR__));
 define('APP_CONFIG', APP_PATH . '/config');
 define('APP_STORAGE', APP_PATH . '/storage');
@@ -22,12 +23,14 @@ $container = new Slim\Container([
         ],
         'errorHandler' => function($c) {
             return function(Slim\Http\Request $request, Slim\Http\Response $response, \Exception $e) use ($c) {
-                $response = $response->write($e->getMessage());
+                $response->getBody()->write($e->getMessage());
                 return $response;
             };
-        }
+        },
     ],
+    'config' => require APP_CONFIG . '/app.php'
 ]);
 $container->register(new App\Providers\MonologProvider());
 $app = new Slim\App($container);
+require APP_PATH . '/app/Http/routes.php';
 return $app;
