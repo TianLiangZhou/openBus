@@ -22,7 +22,7 @@ class BusController extends BaseController
     {
         $query = $request->getQueryParams();
         $sign = $this->verifyWeixin($query);
-        $response->getBody()->write('hello');
+        $response->getBody()->write('success');
         $post = $request->getParsedBody();
         $this->container->get('logger')->info(var_export($post, true));
         return $response;

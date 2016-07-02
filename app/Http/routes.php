@@ -6,4 +6,4 @@
  * Time: 17:30
  */
 $controller = 'App\\Http\\Controllers\\BusController';
-$app->get('/bus', $controller . ':receive');
+$app->any('/bus', $controller . ':receive');
