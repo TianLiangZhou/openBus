@@ -21,10 +21,10 @@ class BusController extends BaseController
     public function receive(Request $request, Response $response)
     {
         $query = $request->getQueryParams();
-        $sign = $this->verifyWeixin($query);
+        if ($request->isPost()) {
+            $post = $request->getParsedBody();
+        }
         $response->getBody()->write('success');
-        $post = $request->getParsedBody();
-        $this->container->get('logger')->info(var_export($post, true));
         return $response;
     }
 }
