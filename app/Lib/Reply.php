@@ -22,9 +22,9 @@ class Reply extends AbstractReceive
     {
         // TODO: Implement text() method.
         $reply = [
-            'toUser' => $xml->ToUserName,
-            'fromUser' => $xml->FromUserName,
-            'content' => 'aaaa'
+            'toUser' => $xml->FromUserName,
+            'fromUser' => $xml->ToUserName,
+            'content' => '成功'
         ];
         return $this->formatMessage('text', $reply);
     }
