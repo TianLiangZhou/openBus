@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Bmwxin\Bmwxin;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -20,7 +21,12 @@ class BusController extends BaseController
      */
     public function receive(Request $request, Response $response)
     {
+        $bmwxin = new Bmwxin(
+            $this->config['weixin']['appid'], 
+            $this->config['weixin']['secret']
+        );
         $query = $request->getQueryParams();
+        if ($bmwxin->)
         if ($request->isPost()) {
             $post = $request->getParsedBody();
         }
