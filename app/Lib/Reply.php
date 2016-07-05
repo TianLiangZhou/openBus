@@ -56,7 +56,18 @@ class Reply extends AbstractReceive
         }
         $message = $this->defaultMessage();
         if (!empty($line)) {
-            $message = $line[count($line) - 1];
+            $tmp = '';
+            foreach ($line as $value) {
+                if (is_string($value)) {
+                    $tmp .= ',' . $value . ',';
+                }
+                if (is_array($value)) {
+                    $tmp .= '[' . $value['start_name'] . '] -> ' .
+                    '乘坐' . $value['name'] .
+                    ' -> [' . $value['end_name'] . ']';
+                }
+            }
+            $message = trim($tmp, ',');
         }
         $reply = [
             'toUser' => $xml->FromUserName,

@@ -56,7 +56,6 @@ class Baidu
         if ($allRoutes) {
             return $line['result']['routes'];
         }
-        $lineDesc = '';
         foreach ($line['result']['routes'][0]['scheme'][0]['steps'] as $key => $value) {
             if (empty($value[0]['vehicle'])) {
                 $bestLine[$key] = $value[0]['stepInstruction'];
@@ -64,7 +63,6 @@ class Baidu
                 $bestLine[$key] = $value[0]['vehicle'];
             }
         }
-        $bestLine[count($bestLine)] = $lineDesc;
         return $bestLine;
     }
 }
