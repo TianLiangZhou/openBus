@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Lib\Baidu;
 use App\Lib\Reply;
 use Bmwxin\Bmwxin;
 use Slim\Http\Request;
@@ -31,7 +32,7 @@ class BusController extends BaseController
         if ($bmwxin->verifyWeixinRequest($this->config['weixin']['token'], $query)) {
             if ($request->isPost()) {
                 $post = $request->getParsedBody();
-                $message = $bmwxin->registerReceiveMessage($post, new Reply());
+                $message = $bmwxin->registerReceiveMessage($post, new Reply($this->container));
                 if ($message) {
                     $response = $response->withHeader('Content-Type', 'text/xml; charset=utf-8');
                 }
