@@ -14,8 +14,18 @@ use Slim\Container;
 
 class Reply extends AbstractReceive
 {
+    /**
+     * @var null|Container
+     */
     protected $c = null;
-    
+    /**
+     * @var array
+     */
+    protected $defaultSplit = [
+        '-', '_', '?', '|',
+        '$', '#', '@', '&',
+        '%', '~'
+    ];
     public function __construct(Container $c)
     {
         $this->c = $c;
@@ -28,19 +38,18 @@ class Reply extends AbstractReceive
     public function text($xml)
     {
         // TODO: Implement text() method.
-        $userMessage = $xml->Content;
-        $split = explode('-', $userMessage);
+        $splitMessage = $this->splitMessage($xml->Content);
         $baidu = new Baidu($this->c->get('config')['baidu']['ak']);
         $line = [];
-        switch (count($split)) {
+        switch (count($splitMessage)) {
             case 1:
                 
                 break;
             case 2:
-                $line = $baidu->getLineInfo($split[0], $split[1]);
+                $line = $baidu->getLineInfo($splitMessage[0], $splitMessage[1]);
                 break;
             case 3:
-                $line = $baidu->getLineInfo($split[0], $split[1], $split[2]);
+                $line = $baidu->getLineInfo($splitMessage[0], $splitMessage[1], $splitMessage[2]);
                 break;
             case 4:
                 break;
@@ -96,5 +105,19 @@ class Reply extends AbstractReceive
     protected function defaultMessage()
     {
         return '系统无法识别此线路';
+    }
+
+    /**
+     * @param $message
+     * @return array
+     */
+    protected function splitMessage($message)
+    {
+        foreach ($this->defaultSplit as $value) {
+            if (strpos($message, $value) !== false) {
+                return explode($value, $message);
+            }
+        }
+        return [];
     }
 }

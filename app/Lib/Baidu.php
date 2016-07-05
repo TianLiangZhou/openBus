@@ -61,10 +61,7 @@ class Baidu
             if (empty($value[0]['vehicle'])) {
                 $bestLine[$key] = $value[0]['stepInstruction'];
             } else {
-                $lineDesc = $value[0]['stepInstruction'];
-                $bestLine[$key] = $value[0]['vehicle']['start_name'] . 
-                    $value[0]['vehicle']['name'] .
-                    $value[0]['vehicle']['end_name'];
+                $bestLine[$key] = $value[0]['vehicle'];
             }
         }
         $bestLine[count($bestLine)] = $lineDesc;
