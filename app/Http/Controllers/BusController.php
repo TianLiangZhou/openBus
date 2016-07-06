@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Lib\Aibang;
 use App\Lib\Baidu;
 use App\Lib\Reply;
 use Bmwxin\Bmwxin;

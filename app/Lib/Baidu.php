@@ -13,7 +13,7 @@ class Baidu
 {
     protected $gateway = 'http://api.map.baidu.com/';
     
-    protected $ak = null;
+    protected $secret = null;
 
     /**
      * @var array
@@ -26,9 +26,9 @@ class Baidu
         4 => 'riding'
     ];
 
-    public function __construct($ak)
+    public function __construct($secret)
     {
-        $this->ak = $ak;
+        $this->secret = $secret;
     }
 
     public function getLineInfo($start, $end, $region = '杭州', $mode = 3, $allRoutes = false)
@@ -40,7 +40,7 @@ class Baidu
             'destination' => $end,
             'region' => $region,
             'output' => 'json',
-            'ak' => $this->ak,
+            'ak' => $this->secret,
         ];
         $client = new \GuzzleHttp\Client();
         $response = $client->request('GET', $this->gateway . 'direction/v1?' . http_build_query($params));

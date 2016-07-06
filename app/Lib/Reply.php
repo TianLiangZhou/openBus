@@ -39,7 +39,7 @@ class Reply extends AbstractReceive
     {
         // TODO: Implement text() method.
         $splitMessage = $this->splitMessage($xml->Content);
-        $baidu = new Baidu($this->c->get('config')['baidu']['ak']);
+        $baidu = new Baidu($this->c->get('config')['baidu']['secret']);
         $line = [];
         switch (count($splitMessage)) {
             case 1:
