@@ -67,14 +67,23 @@ class Reply extends AbstractReceive
         $message = $this->defaultMessage();
         if (!empty($line)) {
             $tmp = '';
-            foreach ($line as $value) {
-                if (is_string($value)) {
-                    $tmp .= ',' . $value . ',';
+            if (!empty($lineDetailMatch)) {
+                foreach ($line as $value) {
+                    $tmp = '线路:' . $value['name'] . "\n" .
+                        . '时间:' . $value['info'] . "\n" . 
+                        . "站点:\n" . 
+                        . implode(' -> ', $value['stats']) . "\n\n";
                 }
-                if (is_array($value)) {
-                    $tmp .= '[' . $value['start_name'] . '] -> ' .
-                    '乘坐' . $value['name'] .
-                    ' -> [' . $value['end_name'] . ']';
+            } else {
+                foreach ($line as $value) {
+                    if (is_string($value)) {
+                        $tmp .= ',' . $value . ',';
+                    }
+                    if (is_array($value)) {
+                        $tmp .= '[' . $value['start_name'] . '] -> ' .
+                            '乘坐' . $value['name'] .
+                            ' -> [' . $value['end_name'] . ']';
+                    }
                 }
             }
             $message = trim($tmp, ',');
