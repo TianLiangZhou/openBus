@@ -38,15 +38,25 @@ class Reply extends AbstractReceive
     public function text($xml)
     {
         // TODO: Implement text() method.
-        $splitMessage = $this->splitMessage($xml->Content);
+        $splitMessage = trim($this->splitMessage($xml->Content));
         $baidu = new Baidu($this->c->get('config')['baidu']['secret']);
+        $aibang = new Aibang($this->c->get('config')['aibang']['secret']);
         $line = [];
+        $lineDetailMatch = [];
+        preg_match('/\d{1,}路|\d{1,}/is', $splitMessage[0], $lineDetailMatch);
+        
         switch (count($splitMessage)) {
             case 1:
-                
+                if (!empty($lineDetailMatch)) {
+                    $line = $aibang->getBusLineStatsDetail($lineDetailMatch[0]);
+                }
                 break;
             case 2:
-                $line = $baidu->getLineInfo($splitMessage[0], $splitMessage[1]);
+                if (!empty($lineDetailMatch)) {
+                    $line = $aibang->getBusLineStatsDetail($lineDetailMatch[0], $splitMessage[1]);
+                } else {
+                    $line = $baidu->getLineInfo($splitMessage[0], $splitMessage[1]);
+                }
                 break;
             case 3:
                 $line = $baidu->getLineInfo($splitMessage[0], $splitMessage[1], $splitMessage[2]);
