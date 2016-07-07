@@ -38,7 +38,7 @@ class Reply extends AbstractReceive
     public function text($xml)
     {
         // TODO: Implement text() method.
-        $splitMessage = trim($this->splitMessage($xml->Content));
+        $splitMessage = $this->splitMessage(trim($xml->Content));
         $baidu = new Baidu($this->c->get('config')['baidu']['secret']);
         $aibang = new Aibang($this->c->get('config')['aibang']['secret']);
         $line = [];
@@ -148,6 +148,6 @@ class Reply extends AbstractReceive
                 return explode($value, $message);
             }
         }
-        return [];
+        return [$message];
     }
 }
