@@ -13,7 +13,7 @@ require APP_PATH . '/vendor/autoload.php';
 
 $container = new Slim\Container([
     'settings' => [
-        'displayErrorDetails' => true,
+        'displayErrorDetails' => false,
         'routerCacheDisabled' => true, //开启路由缓存
         'routerCacheFile' => APP_STORAGE . '/route.json',
         'logger' => [
@@ -23,7 +23,8 @@ $container = new Slim\Container([
         ],
         'errorHandler' => function($c) {
             return function(Slim\Http\Request $request, Slim\Http\Response $response, \Exception $e) use ($c) {
-                $response->getBody()->write($e->getMessage());
+                $c->get('logger')->info($e->getMessage());
+                $response->getBody()->write('success');
                 return $response;
             };
         },

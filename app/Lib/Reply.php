@@ -43,8 +43,7 @@ class Reply extends AbstractReceive
         $aibang = new Aibang($this->c->get('config')['aibang']['secret']);
         $line = [];
         $lineDetailMatch = [];
-        preg_match('/\d{1,}路|\d{1,}/is', $splitMessage[0], $lineDetailMatch);
-        
+        preg_match('/\d{1,}号线|\d{1,}路|[a-zA-z]\d{1,}|\d{1,}/is', $splitMessage[0], $lineDetailMatch);
         switch (count($splitMessage)) {
             case 1:
                 if (!empty($lineDetailMatch)) {
@@ -68,7 +67,10 @@ class Reply extends AbstractReceive
         if (!empty($line)) {
             $tmp = '';
             if (!empty($lineDetailMatch)) {
-                foreach ($line as $value) {
+                foreach ($line as $key => $value) {
+                    if ($key > 1) {
+                        break;
+                    }
                     $tmp .= '线路:' . $value['name'] . "\n" .
                          '时间:' . $value['info'] . "\n" . 
                          "站点:\n" . 
