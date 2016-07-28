@@ -1,16 +1,10 @@
 <?php
-error_reporting(E_ALL);
 define('APP_PATH', dirname(__DIR__));
 define('APP_CONFIG', APP_PATH . '/config');
 define('APP_STORAGE', APP_PATH . '/storage');
 define('TODAY_TIME', strtotime('today'));
 define('CURRENT_TIME', time());
-
 require APP_PATH . '/vendor/autoload.php';
-
-
-
-
 $container = new Slim\Container([
     'settings' => [
         'displayErrorDetails' => false,
@@ -31,6 +25,9 @@ $container = new Slim\Container([
     ],
     'config' => require APP_CONFIG . '/app.php'
 ]);
+if ($container->get('config')['debug']) {
+    error_reporting(E_ALL);
+}
 $container->register(new App\Providers\MonologProvider());
 $app = new Slim\App($container);
 require APP_PATH . '/app/Http/routes.php';
