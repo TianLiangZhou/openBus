@@ -9,6 +9,8 @@
 namespace App\Lib;
 
 
+use GuzzleHttp\Promise\Promise;
+
 class Baidu
 {
     protected $gateway = 'http://api.map.baidu.com/';
@@ -64,5 +66,57 @@ class Baidu
             }
         }
         return $bestLine;
+    }
+
+
+    public function getBusLine($line, $region = '杭州')
+    {
+        $client = new \GuzzleHttp\Client([
+            'timeout' => 3.0
+        ]);
+        $response = $client->request(
+            'GET', $this->gateway
+                . '?qt=s&c=1&wd='. $region .'&rn=10&log=center&ie=utf-8&oue=1&ak=' . $this->secret,
+            []
+        );
+        $city = json_decode($response->getBody(), true);
+        if (!isset($city['current_city']['code'])) {
+            return [];
+        }
+        $code = $city['current_city']['code'];
+
+        $response = $client->request(
+            'GET',
+            $this->gateway . '?qt=bl&c='. $code .'&wd='. $line .'&ie=utf-8&oue=1&ak=' . $this->secret,
+            []
+        );
+
+        $line = json_decode($response->getBody(), true);
+        if (empty($line['content'][0])) {
+            return [];
+        }
+        $lines = $line['content'];
+        $promises = [];
+        $uid = [];
+        foreach ($lines as $item) {
+            $promises[$item['uid']] = $client->getAsync(
+                $this->gateway . '?qt=bsl&c='. $code .'&uid='. $item['uid'] .'&ie=utf-8&oue=1&ak=' . $this->secret
+            );
+            $uid[] = $item['uid'];
+        }
+        $responses = \GuzzleHttp\Promise\settle($promises)->wait();
+
+        $detail = [];
+        foreach ($uid as $u) {
+            $content = json_decode($responses[$u]['value']->getBody(), true);
+            if (isset($content['content'][0])) {
+                $site = array_map(
+                    function($value) { return $value['name'];}, $content['content'][0]['stations']
+                );
+                $detail[] = $content['content'][0]['name'];
+                $detail[] = $site;
+            }
+        }
+        return $detail;
     }
 }

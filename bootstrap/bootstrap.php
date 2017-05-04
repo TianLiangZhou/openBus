@@ -27,8 +27,10 @@ $container = new Slim\Container([
 ]);
 if ($container->get('config')['debug']) {
     error_reporting(E_ALL);
+    ini_set('display_errors', 1);
 }
 $container->register(new App\Providers\MonologProvider());
+$container->register(new App\Providers\SubscriberProvider());
 $app = new Slim\App($container);
 require APP_PATH . '/app/Http/routes.php';
 return $app;

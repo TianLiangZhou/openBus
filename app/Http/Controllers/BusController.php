@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Lib\Aibang;
 use App\Lib\Baidu;
-use App\Lib\Reply;
-use Bmwxin\Bmwxin;
+use App\Providers\EventSubscriber;
+use App\Providers\TextSubscriber;
+use Bmwxin\MessageDispatcher;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Bmwxin\MpSDK;
 
 
 /**
@@ -24,22 +26,24 @@ class BusController extends BaseController
      */
     public function receive(Request $request, Response $response)
     {
-        $bmwxin = new Bmwxin(
-            $this->config['weixin']['appid'], 
-            $this->config['weixin']['secret']
-        );
         $query = $request->getQueryParams();
-        $message = 'success';
-        if ($bmwxin->verifyWeixinRequest($this->config['weixin']['token'], $query)) {
-            if ($request->isPost()) {
-                $post = $request->getParsedBody();
-                $message = $bmwxin->registerReceiveMessage($post, new Reply($this->container));
-                if ($message) {
-                    $response = $response->withHeader('Content-Type', 'text/xml; charset=utf-8');
+        $verify = MpSDK::verifyRequest($this->config['weixin']['token'], $query);
+        if ($verify == false) {
+            //return $response->write('error');
+        }
+        $response = $response->withHeader('Content-Type', 'text/xml; charset=utf-8');
+        $messageResponse = 'success';
+        if ($request->isPost()) {
+            $package = $request->getParsedBody();
+            if ($package instanceof \SimpleXMLElement) {
+                $dispatcher = new MessageDispatcher($package);
+                foreach ($this->container['subscriber'] as $subscriber) {
+                    $dispatcher->addSubscribers($subscriber);
                 }
+                $messageResponse = $dispatcher->dispatch();
             }
         }
-        $response->write($message);
+        $response->write($messageResponse);
         return $response;
     }
 }
