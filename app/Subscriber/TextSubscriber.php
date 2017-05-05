@@ -51,13 +51,13 @@ class TextSubscriber implements MessageSubscriberInterface
         if (!empty($result)) {
             if ($line) {
                 foreach ($result as $key => $value) {
+                    if ($key > 5) break;
                     if (is_string($value)) {
                         $message .= '线路: ' . $value . "\n";
                     }
                     if (is_array($value)) {
                         $message .= '站点: ' . implode(' -> ', $value) . "\n\n";
                     }
-                    if ($key > 5) break;
                 }
             } else {
                 foreach ($result as $value) {
