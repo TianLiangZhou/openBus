@@ -28,19 +28,15 @@ class BusController extends BaseController
     {
         $query = $request->getQueryParams();
         $verify = MpSDK::verifyRequest($this->config['weixin']['token'], $query);
-        if ($verify == false) {
-            //return $response->write('error');
+        if ($verify == false && $this->config['debug'] == false) {
+            return $response->write('error');
         }
         $response = $response->withHeader('Content-Type', 'text/xml; charset=utf-8');
         $messageResponse = 'success';
         if ($request->isPost()) {
             $package = $request->getParsedBody();
             if ($package instanceof \SimpleXMLElement) {
-                $dispatcher = new MessageDispatcher($package);
-                foreach ($this->container['subscriber'] as $subscriber) {
-                    $dispatcher->addSubscribers($subscriber);
-                }
-                $messageResponse = $dispatcher->dispatch();
+                $messageResponse = $this->container['dispatcher']($package);
             }
         }
         $response->write($messageResponse);

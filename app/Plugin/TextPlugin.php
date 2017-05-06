@@ -6,15 +6,16 @@
  * Time: 10:51
  */
 
-namespace App\Subscriber;
+namespace App\Plugin;
 
 
 use App\Lib\Baidu;
-use Bmwxin\Message\MessageSubscriberInterface;
 use Bmwxin\Message\MessageType;
-use Bmwxin\Response;
+use Bmwxin\Response\ResponsePluginInterface;
+use Bmwxin\Response\ResponseInterface;
+use Bmwxin\Response\TextResponse;
 
-class TextSubscriber implements MessageSubscriberInterface
+class TextPlugin implements ResponsePluginInterface
 {
     private $defaultSplit = [
         '-', '_', '?', '|',
@@ -28,9 +29,23 @@ class TextSubscriber implements MessageSubscriberInterface
     {
         $this->config = $config;
     }
-
-    public function onMessageType(Response $response, $package)
+    /**
+     * @param $message
+     * @return array
+     */
+    private function splitContent($message)
     {
+        foreach ($this->defaultSplit as $value) {
+            if (strpos($message, $value) !== false) {
+                return explode($value, $message);
+            }
+        }
+        return [$message];
+    }
+
+    public function getResponse($package): ResponseInterface
+    {
+        // TODO: Implement getResponse() method.
         $content = $this->splitContent(trim((string) $package->Content));
         $line = false;
         if (is_numeric($content[0])) {
@@ -73,31 +88,18 @@ class TextSubscriber implements MessageSubscriberInterface
             }
             $responseMessage = trim($message, ',');
         }
-        $textResponse = new Response\TextResponse($package);
-        $textResponse->setContent($responseMessage);
-        $response->setContent($textResponse);
+        return  (new TextResponse($package))->setContent($responseMessage);
     }
 
-    /**
-     * @param $message
-     * @return array
-     */
-    private function splitContent($message)
+    public function type(): string
     {
-        foreach ($this->defaultSplit as $value) {
-            if (strpos($message, $value) !== false) {
-                return explode($value, $message);
-            }
-        }
-        return [$message];
+        // TODO: Implement type() method.
+        return MessageType::TEXT;
     }
 
-    public function getSubscriberType()
+    public function name(): string
     {
-        // TODO: Implement getSubscriberType() method.
-
-        return [
-            MessageType::TEXT => ['onMessageType', 1]
-        ];
+        // TODO: Implement name() method.
+        return "";
     }
 }
