@@ -70,7 +70,7 @@ class TextPlugin implements ResponsePluginInterface
                     $message .= '线路: ' . $value['name'] . "\n";
                     $message .= '时间: ' . $value['time'] . "\n";
                     $message .= '票价: ' . ($value['price'] / 100) . "元\n";
-                    $message .= '站点: ' . implode(' -> ', $value) . "\n\n";
+                    $message .= '站点: ' . implode(' -> ', $value['station']) . "\n\n";
                 }
             } else {
                 foreach ($result as $value) {
