@@ -113,8 +113,12 @@ class Baidu
                 $site = array_map(
                     function($value) { return $value['name'];}, $content['content'][0]['stations']
                 );
-                $detail[] = $content['content'][0]['name'];
-                $detail[] = $site;
+                $detail[] = [
+                    'name' => $content['content'][0]['name'],
+                    'time' => $content['content'][0]['timetable'],
+                    'price'=> $content['content'][0]['ticketPrice'],
+                    'station' => $site,
+                ];
             }
         }
         return $detail;

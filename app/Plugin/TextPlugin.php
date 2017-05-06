@@ -66,13 +66,11 @@ class TextPlugin implements ResponsePluginInterface
         if (!empty($result)) {
             if ($line) {
                 foreach ($result as $key => $value) {
-                    if ($key > 5) break;
-                    if (is_string($value)) {
-                        $message .= '线路: ' . $value . "\n";
-                    }
-                    if (is_array($value)) {
-                        $message .= '站点: ' . implode(' -> ', $value) . "\n\n";
-                    }
+                    if ($key > 1) break;
+                    $message .= '线路: ' . $value['name'] . "\n";
+                    $message .= '时间: ' . $value['time'] . "\n";
+                    $message .= '票价: ' . ($value['price'] / 100) . "元\n";
+                    $message .= '站点: ' . implode(' -> ', $value) . "\n\n";
                 }
             } else {
                 foreach ($result as $value) {
