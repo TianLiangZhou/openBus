@@ -25,6 +25,14 @@ class TextPlugin implements ResponsePluginInterface
 
     private $config = [];
 
+    private $defaultMessage = <<<EOF
+无法识别此消息(公众号查询须知)\n
+站点查询如: 37, 37路, 1号线, 37_杭州, 37_广州\n
+线路查询如: 起点_终点, 起点_终点_城市, 如(文一路_西湖文化广场)\n
+分隔符可以为: -, _, ?, |, $, #, @, &, %, ~。如(37|广州)
+EOF;
+
+
     public function __construct($config)
     {
         $this->config = $config;
@@ -43,6 +51,10 @@ class TextPlugin implements ResponsePluginInterface
         return [$message];
     }
 
+    /**
+     * @param $package
+     * @return ResponseInterface
+     */
     public function getResponse($package): ResponseInterface
     {
         // TODO: Implement getResponse() method.
@@ -61,7 +73,7 @@ class TextPlugin implements ResponsePluginInterface
         } else {
             $result = $baiDu->getLineInfo($content[0], isset($content[1]) ? $content[1] : $content[0], isset($content[2]) ? $content['2'] : '杭州');
         }
-        $responseMessage = '系统无法识别此线路';
+        $responseMessage = $this->defaultMessage;
         $message = null;
         if (!empty($result)) {
             if ($line) {
