@@ -32,6 +32,8 @@ class TextPlugin implements ResponsePluginInterface
 分隔符可以为: -, _, ?, |, $, #, @, &, %, ~。如(37|广州)
 EOF;
 
+    private $defaultCity = '杭州';
+
 
     public function __construct($config)
     {
@@ -69,9 +71,9 @@ EOF;
         $baiDu = new Baidu($this->config['baidu']['secret']);
         $result = null;
         if ($line) {
-            $result = $baiDu->getBusLine($content[0], isset($content[1]) ? $content[1] : '杭州');
+            $result = $baiDu->getBusLine($content[0], isset($content[1]) ? $content[1] : $this->defaultCity);
         } else {
-            $result = $baiDu->getLineInfo($content[0], isset($content[1]) ? $content[1] : $content[0], isset($content[2]) ? $content['2'] : '杭州');
+            $result = $baiDu->getLineInfo($content[0], isset($content[1]) ? $content[1] : $content[0], isset($content[2]) ? $content[2] : $this->defaultCity);
         }
         $responseMessage = $this->defaultMessage;
         $message = null;
