@@ -63,7 +63,7 @@ EOF;
         if (is_numeric($content[0])) {
             $line = true;
         }
-        if (preg_match('/[a-Z]?[0-9]+([路|线|号线]+)?/is', $content[0])) {
+        if (preg_match('/[a-z]?[0-9]+([路|线|号线]+)?/is', $content[0])) {
             $line = true;
         }
         $baiDu = new Baidu($this->config['baidu']['secret']);
