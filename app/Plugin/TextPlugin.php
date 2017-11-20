@@ -22,7 +22,7 @@ class TextPlugin implements ResponsePluginInterface
         '$', '#', '@', '&',
         '%', '~', '/', '%',
         '^', '*', '=', '+',
-        ' '
+        '.', ' ', ','
     ];
 
     private $config = [];
