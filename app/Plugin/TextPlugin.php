@@ -20,7 +20,8 @@ class TextPlugin implements ResponsePluginInterface
     private $defaultSplit = [
         '-', '_', '?', '|',
         '$', '#', '@', '&',
-        '%', '~'
+        '%', '~', '/', '*',
+        '^', '=', '+'
     ];
 
     private $config = [];
