@@ -9,11 +9,11 @@
 namespace App\Providers;
 
 
-use App\Subscriber\EventSubscribePlugin;
-use App\Subscriber\TextPlugin;
-use Bmwxin\MessageDispatcher;
+use App\Plugin\EventSubscribePlugin;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use Shrimp\Message\Type;
+use Shrimp\ShrimpWechat;
 
 class DispatcherProvider implements ServiceProviderInterface
 {
@@ -30,14 +30,11 @@ class DispatcherProvider implements ServiceProviderInterface
     {
         // TODO: Implement register() method.
         $config = $pimple->get('config');
-        $plugins = [];
-        if (isset($config['plugins'])) {
-            foreach ($config['plugins'] as $plugin) $plugins[] = new $plugin($config);
-        }
-        $pimple['dispatcher'] = $pimple->protect(function($package) use ($plugins) {
-            $dispatcher =  new MessageDispatcher($package);
-            if ($plugins) $dispatcher->addPlugins($plugins);
-            return $dispatcher->dispatch();
+        $pimple['dispatcher'] = $pimple->protect(function() use ($config) {
+            $dispatcher =  new ShrimpWechat($config['weixin']['appid'], $config['weixin']['secret']);
+            $dispatcher->bind(new \App\Plugin\TextPlugin($config));
+            $dispatcher->bind(new EventSubscribePlugin([]), Type::SUBSCRIBE);
+            return $dispatcher->send();
         });
     }
 }

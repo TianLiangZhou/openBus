@@ -10,12 +10,9 @@ namespace App\Plugin;
 
 
 use App\Lib\Baidu;
-use Bmwxin\Message\MessageType;
-use Bmwxin\Response\ResponsePluginInterface;
-use Bmwxin\Response\ResponseInterface;
-use Bmwxin\Response\TextResponse;
+use Shrimp\GetResponseEvent;
 
-class TextPlugin implements ResponsePluginInterface
+class TextPlugin
 {
     private $defaultSplit = [
         '-', '_', '?', '|',
@@ -55,14 +52,10 @@ EOF;
         return [$message];
     }
 
-    /**
-     * @param $package
-     * @return ResponseInterface
-     */
-    public function getResponse($package): ResponseInterface
+    public function __invoke(GetResponseEvent $response)
     {
-        // TODO: Implement getResponse() method.
-        $content = $this->splitContent(trim((string) $package->Content));
+        // TODO: Implement __invoke() method.
+        $content = $this->splitContent(trim((string) $response->getAttribute("Content")));
         $line = false;
         if (is_numeric($content[0])) {
             $line = true;
@@ -102,18 +95,6 @@ EOF;
             }
             $responseMessage = trim($message, ',');
         }
-        return  (new TextResponse($package))->setContent($responseMessage);
-    }
-
-    public function type(): string
-    {
-        // TODO: Implement type() method.
-        return MessageType::TEXT;
-    }
-
-    public function name(): string
-    {
-        // TODO: Implement name() method.
-        return "";
+        $response->setResponse($responseMessage);
     }
 }

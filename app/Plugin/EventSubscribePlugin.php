@@ -9,12 +9,9 @@
 namespace App\Plugin;
 
 
-use Bmwxin\Message\MessageType;
-use Bmwxin\Response\ResponsePluginInterface;
-use Bmwxin\Response\ResponseInterface;
-use Bmwxin\Response\TextResponse;
+use Shrimp\GetResponseEvent;
 
-class EventSubscribePlugin implements ResponsePluginInterface
+class EventSubscribePlugin
 {
     private $config = [];
     private $defaultSubscribeMessage = <<<EOF
@@ -27,25 +24,10 @@ EOF;
     {
         $this->config = $config;
     }
-    /**
-     * @param $package
-     * @return ResponseInterface
-     */
-    public function getResponse($package): ResponseInterface
-    {
-        // TODO: Implement getResponse() method.
-        return (new TextResponse($package))->setContent($this->defaultSubscribeMessage);
-    }
 
-    public function type(): string
+    public function __invoke(GetResponseEvent $response)
     {
-        // TODO: Implement type() method.
-        return MessageType::EVENT;
-    }
-
-    public function name(): string
-    {
-        // TODO: Implement name() method.
-        return MessageType::SUBSCRIBE;
+        // TODO: Implement __invoke() method.
+        $response->setResponse($this->defaultSubscribeMessage);
     }
 }
