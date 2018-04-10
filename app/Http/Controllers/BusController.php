@@ -26,6 +26,9 @@ class BusController extends BaseController
         if ($verify == false && $this->config['debug'] == false) {
             return $response->write('error');
         }
+        if ($this->config['debug'] && $verify) {
+            return $response->write($query['echostr']);
+        }
         $response = $response->withHeader('Content-Type', 'text/xml; charset=utf-8');
         $messageResponse = 'success';
         if ($request->isPost()) {
