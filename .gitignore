@@ -3,4 +3,7 @@
 /.idea
 /storage/route.json
 /*.lock
-/config/app.php
+/.env
+/storage/logs/*
+/storage/cache/*
+/node_modules

@@ -10,6 +10,6 @@
  * 应用入口文件
  */
 
-$app = include dirname(__DIR__) . '/bootstrap/bootstrap.php';
+$app = include __DIR__ . '/../bootstrap/bootstrap.php';
 
 $app->run();

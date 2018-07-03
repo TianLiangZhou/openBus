@@ -1,8 +1,8 @@
 {
-    "name": "gongjiaotong/gongjiaotong",
-    "description": "description_text",
+    "name": "openBus/openBus",
+    "description": "",
     "minimum-stability": "stable",
-    "license": "apache",
+    "license": "MIT",
     "authors": [
         {
             "name": "zhoutianliang",
@@ -12,12 +12,12 @@
     "require": {
         "slim/slim": "^3.0",
         "monolog/monolog": "^1.19",
-        "lightcache/lightcache": "^1.0",
         "meshell/shrimp-wechat-sdk": "^1.0",
-        "guzzlehttp/guzzle": "^6.2"
+        "guzzlehttp/guzzle": "^6.2",
+        "vlucas/phpdotenv": "^2.5"
     },
     "require-dev": {
-        "phpunit/phpunit": "5.7"
+        "phpunit/phpunit": "^5.7"
     },
     "autoload": {
         "psr-4": {
