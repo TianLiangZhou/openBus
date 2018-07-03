@@ -33,6 +33,9 @@ class MonologProvider implements ServiceProviderInterface
             throw new \InvalidArgumentException('Logger configuration not found');
         }
         $pimple['logger'] = new Logger($config['logger']['name']);
-        $pimple['logger']->pushHandler(new StreamHandler($config['logger']['path'], $config['logger']['level']));
+        try {
+            $pimple['logger']->pushHandler(new StreamHandler($config['logger']['path'], $config['logger']['level']));
+        } catch (\Exception $e) {
+        }
     }
 }
