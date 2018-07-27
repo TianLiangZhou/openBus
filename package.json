@@ -4,24 +4,44 @@
   "description": "bus service",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack-cli --env development",
+    "start:dev": "webpack-dev-server --env development --watch-poll"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TianLiangZhou/openBus.git"
   },
-  "dependencies": {
-    "bootstrap": "^4.1.1",
-    "jquery": "^3.3.1",
-    "popper.js": "^1.14.3"
-  },
+  "dependencies": {},
   "author": "",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/TianLiangZhou/openBus/issues"
   },
+  "babel": {
+    "presets": [
+      "env",
+      "react"
+    ]
+  },
   "homepage": "https://github.com/TianLiangZhou/openBus#readme",
   "devDependencies": {
-    "webpack": "^4.14.0"
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "bootstrap": "^4.1.1",
+    "css-loader": "^0.28.11",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^4.0.0-alpha",
+    "raw-loader": "^0.5.1",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-hot-loader": "^4.3.3",
+    "reactstrap": "^6.2.0",
+    "style-loader": "^0.21.0",
+    "url-loader": "^1.0.1",
+    "webpack": "^4.16.2"
   }
 }
