@@ -9,7 +9,9 @@
 namespace App\Plugin;
 
 
+use App\Exception\LineException;
 use App\Lib\Baidu;
+use GuzzleHttp\Exception\GuzzleException;
 use Shrimp\GetResponseEvent;
 
 class TextPlugin
@@ -52,6 +54,10 @@ EOF;
         return [$message];
     }
 
+    /**
+     * @param GetResponseEvent $response
+     * @throws GuzzleException
+     */
     public function __invoke(GetResponseEvent $response)
     {
         // TODO: Implement __invoke() method.
@@ -65,12 +71,18 @@ EOF;
         }
         $baiDu = new Baidu($this->config['baidu']['secret']);
         $result = null;
-        if ($line) {
-            $result = $baiDu->getBusLine($content[0], isset($content[1]) ? $content[1] : $this->defaultCity);
-        } else {
-            $result = $baiDu->getLineInfo($content[0], isset($content[1]) ? $content[1] : $content[0], isset($content[2]) ? $content[2] : $this->defaultCity);
-        }
         $responseMessage = $this->defaultMessage;
+        try {
+            if ($line) {
+                $result = $baiDu->getBusLine($content[0], isset($content[1]) ? $content[1] : $this->defaultCity);
+            } else {
+                $result = $baiDu->getLineInfo($content[0], isset($content[1]) ? $content[1] : $content[0], isset($content[2]) ? $content[2] : $this->defaultCity);
+            }
+        } catch (LineException $e) {
+            $responseMessage = $e->getMessage();
+        } catch (GuzzleException $e) {
+            $responseMessage = "查询超时，请稍后再试";
+        }
         $message = null;
         if (!empty($result)) {
             if ($line) {

@@ -9,6 +9,7 @@
 namespace App\Lib;
 
 
+use App\Exception\LineException;
 use GuzzleHttp\Promise\Promise;
 
 class Baidu
@@ -33,6 +34,15 @@ class Baidu
         $this->secret = $secret;
     }
 
+    /**
+     * @param $start
+     * @param $end
+     * @param string $region
+     * @param int $mode
+     * @param bool $allRoutes
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function getLineInfo($start, $end, $region = '杭州', $mode = 3, $allRoutes = false)
     {
         //TODO http://lbsyun.baidu.com/index.php?title=webapi/direction-api
@@ -69,6 +79,13 @@ class Baidu
     }
 
 
+    /**
+     * @param $line
+     * @param string $region
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws LineException
+     */
     public function getBusLine($line, $region = '杭州')
     {
         $client = new \GuzzleHttp\Client([
@@ -81,19 +98,17 @@ class Baidu
         );
         $city = json_decode($response->getBody(), true);
         if (!isset($city['current_city']['code'])) {
-            return [];
+            throw new LineException("获取城市信息失败，请输入正确的城市");
         }
         $code = $city['current_city']['code'];
-
         $response = $client->request(
             'GET',
             $this->gateway . '?qt=bl&c='. $code .'&wd='. $line .'&ie=utf-8&oue=1&ak=' . $this->secret,
             []
         );
-
         $line = json_decode($response->getBody(), true);
-        if (empty($line['content'][0])) {
-            return [];
+        if (empty($line['content'][0]) || empty($line['content'][0]['uid'])) {
+            throw new LineException("公交线路信息查询失败，可能该城市无此线路");
         }
         $lines = $line['content'];
         $promises = [];

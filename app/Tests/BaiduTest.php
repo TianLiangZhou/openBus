@@ -16,12 +16,22 @@ class BaiduTest extends PHPUnit_Framework_TestCase
     {
         $baidu = new Baidu("8377E1ab1af3582362d0b75e99bdea7c");
         $line = $baidu->getLineInfo("三墩镇", "天堂软件园");
-        print_r($line);
-        //echo $baidu->getBusLine('37');
-        $content = '37路';
-        if (preg_match('/[0-9]+[路|线|号线]+/', $content)) {
-            echo 'aaa';
-        }
         $this->assertEmpty($line);
+    }
+
+    public function testGetLine()
+    {
+        $baidu = new Baidu("8377E1ab1af3582362d0b75e99bdea7c");
+        $line = $baidu->getBusLine("2", "珠海");
+        print_r($line);
+        $this->assertEmpty($line);
+    }
+
+    public function testMatch()
+    {
+        $content = '37路';
+        preg_match('/[0-9]+[路|线|号线]+/', $content, $match);
+
+        $this->assertTrue($match !== null);
     }
 }
