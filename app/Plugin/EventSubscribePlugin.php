@@ -29,7 +29,7 @@ EOF;
     public function __invoke(GetResponseEvent $response)
     {
         // TODO: Implement __invoke() method.
-        //$response->setResponse($this->defaultSubscribeMessage);
-        $response->setResponse(new ImageResponse($response->getMessageSource(), "nYHVBUXdOTw2UF20Yv4ZEKB6U1QrtteLya4AgpPmfUPS-XkoTjJYKbCoHONiSANY"));
+        $response->setResponse($this->defaultSubscribeMessage);
+        //$response->setResponse(new ImageResponse($response->getMessageSource(), "nYHVBUXdOTw2UF20Yv4ZEKB6U1QrtteLya4AgpPmfUPS-XkoTjJYKbCoHONiSANY"));
     }
 }
