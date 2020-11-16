@@ -2,7 +2,6 @@
 /vendor
 /.idea
 /storage/route.json
-/*.lock
 /.env
 /storage/logs/*
 /storage/caches/*
