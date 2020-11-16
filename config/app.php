@@ -7,7 +7,7 @@
  */
 
 return [
-    'debug' => !!getenv('APP_DEBUG'),
+    'debug' => !!getenv('DEBUG'),
     'weixin' => [
         'appid' => getenv('WECHAT_APPID'),
         'secret'=> getenv('WECHAT_SERECT'),

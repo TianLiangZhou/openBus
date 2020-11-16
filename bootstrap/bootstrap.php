@@ -6,51 +6,64 @@ define('TODAY_TIME', strtotime('today'));
 define('CURRENT_TIME', time());
 require APP_PATH . '/vendor/autoload.php';
 
-use App\Providers\DispatcherProvider;
-use App\Providers\MonologProvider;
+use App\Http\Controllers\BusController;
+use DI\ContainerBuilder;
+use DI\Definition\ValueDefinition;
 use Dotenv\Dotenv;
-use Interop\Container\Exception\ContainerException;
-use Psr\Container\ContainerInterface;
-use Slim\App;
-use Slim\Container;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Laminas\Diactoros\Response\TextResponse;
+use Laminas\Diactoros\ResponseFactory;
+use Laminas\Diactoros\StreamFactory;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use Psr\Http\Message\ServerRequestInterface;
+use Slim\Factory\AppFactory;
 
 (new Dotenv(APP_PATH))->load();
 
 $config = require __DIR__ . '/../config/app.php';
 
-$setting = [
-    'settings' => [
-        'displayErrorDetails' => $config['debug'] ?? true,
-        'routerCacheDisabled' => !$config['debug'] ?? false, //开启路由缓存
-        'routerCacheFile' => __DIR__ . '/../storage/route.json',
-        'logger' => [
-            'name' => getenv('APP_NAME'),
-            'level' => Monolog\Logger::DEBUG,
-            'path' => __DIR__ . '/../storage/logs/' . PHP_SAPI . '-' . date('Ymd') . '.log',
-        ],
-        'errorHandler' => function(ContainerInterface $c) {
-            return function(Request $request, Response $response, \Exception $e) use ($c) {
-                $c->get('logger')->info($e->getMessage());
-                $response->getBody()->write('success');
-                return $response;
-            };
-        },
-    ],
-    'config' => $config
-];
-$container = new Container($setting);
+$builder= new ContainerBuilder();
+$builder->enableDefinitionCache();
+$builder->enableCompilation(__DIR__ . '/../storage/caches');
+$builder->useAutowiring(false);
+$builder->useAnnotations(false);
 
 try {
-    if ($config['debug']) {
-        error_reporting(E_ALL);
-        ini_set('display_errors', 1);
-    }
-} catch (ContainerException $e) {
+    $container = $builder->build();
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit(254);
 }
-$container->register(new MonologProvider());
-$container->register(new DispatcherProvider());
-$app = new App($container);
-require __DIR__ . '/../routes/api.php';
+$container->set('config', $config);
+$container->set('logger', new ValueDefinition(function () {
+    $logger = new Logger(getenv('APP_NAME'));
+    $logger->pushHandler(new StreamHandler(
+        __DIR__ . '/../storage/logs/' . PHP_SAPI . '-' . date('Ymd') . '.log',
+        Monolog\Logger::DEBUG,
+    ));
+    return $logger;
+}));
+
+
+AppFactory::setResponseFactory(new ResponseFactory());
+AppFactory::setStreamFactory(new StreamFactory());
+AppFactory::setContainer($container);
+
+
+$app = AppFactory::create();
+if ($config['debug']) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+}
+$errorHandler = $app->addErrorMiddleware(true, true, true);
+$errorHandler->setErrorHandler(
+    [
+        Exception::class,
+    ],
+    function (ServerRequestInterface $request, Throwable $exception, bool $displayErrorDetails) {
+        return new TextResponse($exception->getMessage());
+    },
+    true
+);
+$app->any('/message', BusController::class . ':receive');
 return $app;

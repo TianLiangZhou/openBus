@@ -8,20 +8,19 @@
 
 namespace App\Http\Controllers;
 
+use Psr\Container\ContainerInterface;
 
-use Slim\Container;
-
-class BaseController
+abstract class BaseController
 {
-    protected $container = null;
+    protected ContainerInterface $container;
     
     protected $config = [];
 
     /**
      * BaseController constructor.
-     * @param Container $container
+     * @param ContainerInterface $container
      */
-    public function __construct(Container $container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         

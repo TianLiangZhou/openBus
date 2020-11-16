@@ -12,11 +12,11 @@ namespace App\Plugin;
 use App\Exception\LineException;
 use App\Lib\Baidu;
 use GuzzleHttp\Exception\GuzzleException;
-use Shrimp\GetResponseEvent;
+use Shrimp\Event\ResponseEvent;
 
 class TextPlugin
 {
-    private $defaultSplit = [
+    private array $defaultSplit = [
         '-', '_', '?', '|',
         '$', '#', '@', '&',
         '%', '~', '/', '%',
@@ -24,16 +24,16 @@ class TextPlugin
         '.', ' ', ','
     ];
 
-    private $config = [];
+    private array $config;
 
-    private $defaultMessage = <<<EOF
+    private string $defaultMessage = <<<EOF
 无法识别此消息(查询须知)\n
 公交线路如: 37, 37路, 1号线, 37_杭州, 37_广州, 地铁(如: 1号线，4号线，6号线_广州)\n
 换乘查询如: 起点_终点, 起点_终点_城市, 如(文一路_西湖文化广场)\n
 分隔符可以为: -, _, ?, |, $, #, @, &, %, ~。如(37|广州)
 EOF;
 
-    private $defaultCity = '杭州';
+    private string $defaultCity = '杭州';
 
 
     public function __construct($config)
@@ -55,10 +55,9 @@ EOF;
     }
 
     /**
-     * @param GetResponseEvent $response
-     * @throws GuzzleException
+     * @param ResponseEvent $response
      */
-    public function __invoke(GetResponseEvent $response)
+    public function __invoke(ResponseEvent $response)
     {
         // TODO: Implement __invoke() method.
         $content = $this->splitContent(trim((string) $response->getAttribute("Content")));

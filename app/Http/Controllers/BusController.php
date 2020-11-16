@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Plugin\EventSubscribePlugin;
+use App\Plugin\TextPlugin;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Shrimp\Message\Event;
 use Shrimp\ShrimpWechat;
-use Slim\Http\Request;
-use Slim\Http\Response;
 
 
 /**
@@ -15,26 +18,31 @@ use Slim\Http\Response;
 class BusController extends BaseController
 {
     /**
-     * @param Request $request
-     * @param Response $response
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @return Response
      */
-    public function receive(Request $request, Response $response)
+    public function receive(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $query = $request->getQueryParams();
         $verify = ShrimpWechat::verifyRequest($this->config['weixin']['token'], $query);
         if ($verify == false && $this->config['debug'] == false) {
-            return $response->write('error');
+            $response->getBody()->write('error');
+            return $response;
         }
         if ($this->config['debug'] && $verify) {
-            return $response->write($query['echostr']);
+            $response->getBody()->write($query['echostr']);
+            return $response;
         }
         $response = $response->withHeader('Content-Type', 'text/xml; charset=utf-8');
         $messageResponse = 'success';
-        if ($request->isPost()) {
-            $messageResponse = $this->container['dispatcher']();
+        if ($request->getMethod() === 'POST') {
+            $dispatcher = new ShrimpWechat($this->config['weixin']['appid'], $this->config['weixin']['secret']);
+            $dispatcher->bind(new TextPlugin($this->config));
+            $dispatcher->bind(new EventSubscribePlugin($this->config), Event::EVENT_SUBSCRIBE);
+            $messageResponse = $dispatcher->send();
         }
-        $response->write($messageResponse);
+        $response->getBody()->write($messageResponse);
         return $response;
     }
 }

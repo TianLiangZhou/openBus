@@ -10,6 +10,8 @@
  * 应用入口文件
  */
 
+use Laminas\Diactoros\ServerRequestFactory;
+
 $app = include __DIR__ . '/../bootstrap/bootstrap.php';
 
-$app->run();
+$app->run(ServerRequestFactory::fromGlobals());
