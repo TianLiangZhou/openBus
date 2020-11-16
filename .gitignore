@@ -5,5 +5,5 @@
 /*.lock
 /.env
 /storage/logs/*
-/storage/cache/*
+/storage/caches/*
 /node_modules
