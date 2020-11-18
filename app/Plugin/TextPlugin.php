@@ -33,10 +33,10 @@ class TextPlugin
 分隔符可以为: -, _, ?, |, $, #, @, &, %, ~。如(37|广州)
 EOF;
 
-    private string $defaultCity = '杭州';
+    private string $defaultCity = '杭州市';
 
 
-    public function __construct($config)
+    public function __construct(array $config)
     {
         $this->config = $config;
     }

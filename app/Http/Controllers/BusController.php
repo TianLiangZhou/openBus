@@ -20,7 +20,7 @@ class BusController extends BaseController
     /**
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
-     * @return Response
+     * @return ResponseInterface
      */
     public function receive(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {

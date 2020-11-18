@@ -5,33 +5,45 @@
  * Date: 2016/7/5
  * Time: 10:52
  */
+declare(strict_types=1);
 
 namespace App\Lib;
 
-
 use App\Exception\LineException;
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Promise\Promise;
+use GuzzleHttp\Promise\Utils;
 
 class Baidu
 {
-    protected $gateway = 'http://api.map.baidu.com/';
+    private string $gateway = 'https://api.map.baidu.com/';
     
-    protected $secret = null;
+    private ?string $secret;
 
     /**
      * @var array
      * driving（驾车）、walking（步行）、transit（公交）、riding（骑行）
      */
-    protected $lineMode = [
-        1 => 'driving', 
+    protected array $lineMode = [
+        1 => 'driving',
         2 => 'walking',
         3 => 'transit',
         4 => 'riding'
     ];
 
-    public function __construct($secret)
+    /**
+     * @var ClientInterface
+     */
+    private $client;
+
+    public function __construct(string $secret)
     {
         $this->secret = $secret;
+
+        $this->client = new Client([
+            'timeout' => 3.0,
+        ]);
     }
 
     /**
@@ -42,6 +54,7 @@ class Baidu
      * @param bool $allRoutes
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws LineException
      */
     public function getLineInfo($start, $end, $region = '杭州', $mode = 3, $allRoutes = false)
     {
@@ -54,10 +67,12 @@ class Baidu
             'output' => 'json',
             'ak' => $this->secret,
         ];
-        $client = new \GuzzleHttp\Client();
-        $response = $client->request('GET', $this->gateway . 'direction/v1?' . http_build_query($params));
+        $response = $this->client->request('GET', $this->gateway . 'direction/v1', ['query' => $params]);
+        if ($response->getStatusCode() !== 200) {
+            throw new LineException("获取线路信息失败!");
+        }
         
-        $line = json_decode($response->getBody(), true);
+        $line = json_decode($response->getBody()->getContents(), true);
         $bestLine = [];
         if ($line['status'] !== 0 && $line['message'] !== 'ok') {
             return $bestLine;
@@ -86,44 +101,46 @@ class Baidu
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws LineException
      */
-    public function getBusLine($line, $region = '杭州')
+    public function getBusLine($line, string $region = '杭州市')
     {
-        $client = new \GuzzleHttp\Client([
-            'timeout' => 3.0
-        ]);
-        $response = $client->request(
-            'GET', $this->gateway
-                . '?qt=s&c=1&wd='. $region .'&rn=10&log=center&ie=utf-8&oue=1&ak=' . $this->secret,
-            []
-        );
-        $city = json_decode($response->getBody(), true);
+        $url = $this->gateway
+            . '?qt=s&c=1&wd='. urlencode($region) .'&rn=10&log=center&ie=utf-8&oue=1&ak=' . $this->secret;
+        $response = $this->client->request( 'GET', $url, []);
+        if ($response->getStatusCode() !== 200) {
+            throw new LineException("获取城市信息失败，请输入正确的城市");
+        }
+        $city = json_decode($response->getBody()->getContents(), true);
         if (!isset($city['current_city']['code'])) {
             throw new LineException("获取城市信息失败，请输入正确的城市");
         }
         $code = $city['current_city']['code'];
-        $response = $client->request(
+        $response = $this->client->request(
             'GET',
-            $this->gateway . '?qt=bl&c='. $code .'&wd='. $line .'&ie=utf-8&oue=1&ak=' . $this->secret,
+            $this->gateway . '?qt=bl&c='. $code .'&wd='. urlencode($line) .'&ie=utf-8&oue=1&ak=' . $this->secret,
             []
         );
-        $line = json_decode($response->getBody(), true);
+        if ($response->getStatusCode() !== 200) {
+            throw new LineException("公交线路信息查询失败，可能该城市无此线路");
+        }
+        $line = json_decode($response->getBody()->getContents(), true);
         if (empty($line['content'][0]) || empty($line['content'][0]['uid'])) {
             throw new LineException("公交线路信息查询失败，可能该城市无此线路");
         }
         $lines = $line['content'];
         $promises = [];
         $uid = [];
-        foreach ($lines as $item) {
-            $promises[$item['uid']] = $client->getAsync(
-                $this->gateway . '?qt=bsl&c='. $code .'&uid='. $item['uid'] .'&ie=utf-8&oue=1&ak=' . $this->secret
-            );
+        foreach ($lines as $key => $item) {
+            if ($key > 1) {
+                break;
+            }
+            $url = $this->gateway . '?qt=bsl&c='. $code .'&uid='. $item['uid'] .'&ie=utf-8&oue=1&ak=' . $this->secret;
+            $promises[$item['uid']] = $this->client->getAsync($url);
             $uid[] = $item['uid'];
         }
-        $responses = \GuzzleHttp\Promise\settle($promises)->wait();
-
+        $responses = Utils::settle($promises)->wait();
         $detail = [];
         foreach ($uid as $u) {
-            $content = json_decode($responses[$u]['value']->getBody(), true);
+            $content = json_decode($responses[$u]['value']->getBody()->getContents(), true);
             if (isset($content['content'][0])) {
                 $site = array_map(
                     function($value) { return $value['name'];}, $content['content'][0]['stations']
