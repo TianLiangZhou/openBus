@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>公交通</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" type="text/css">
+    <style>
+        body, html, #map {
+            overflow: hidden;
+            margin:0;
+            font-family: "微软雅黑", serif;
+        }
+        .app {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        #map {
+            height: 150px;
+            margin: auto 10px;
+        }
+    </style>
+    <script type="text/javascript" src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=5E75963b29f904dfc067373606069d2d"></script>
+</head>
+<body>
+    <div class="app">
+        <div class="search-widget">
+            <div class="">
+                <div class="sole-search-content">
+                    <label for="sole-input">
+                        <input id="sole-input" class="searchbox-content-common" type="text" name="word" autocomplete="off" maxlength="256" placeholder="搜地点、查公交、找路线" value="">
+                    </label>
+                    <div class="input-clear" title="清空" style="display: none;"></div>
+                    <div class="searchbox-content-button right-button route-button loading-button" data-title="路线" data-tooltip="1">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="map">
+
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    // GL版命名空间为BMapGL
+    // 按住鼠标右键，修改倾斜角和角度
+    var map = new BMapGL.Map("map");    // 创建Map实例
+    var point = new BMapGL.Point(116.331398,39.897445);
+    map.centerAndZoom(point, 12);  // 初始化地图,设置中心点坐标和地图级别
+    map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+    var geolocation = new BMapGL.Geolocation();
+    geolocation.getCurrentPosition(
+        function(r) {
+            if (this.getStatus() === BMAP_STATUS_SUCCESS){
+                map.centerAndZoom(r.point,  12);
+                var mk = new BMapGL.Marker(r.point);
+                map.addOverlay(mk);
+                map.panTo(r.point);
+            } else {
+
+            }
+        },
+        {enableHighAccuracy: true}
+    );
+</script>
