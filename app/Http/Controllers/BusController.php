@@ -34,7 +34,6 @@ class BusController extends BaseController
             $this->container->get('logger')->info(json_encode(['verify' => $verify, 'debug' => $this->config['debug']]));
             $this->container->get('logger')->info(json_encode($query));
         }
-        $this->container->get('logger')->info(json_encode(['verify'z
         if ($this->config['debug'] && $verify) {
             $response->getBody()->write($query['echostr']);
             return $response;
