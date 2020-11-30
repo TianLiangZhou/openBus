@@ -35,7 +35,7 @@ class BusController extends BaseController
             $this->container->get('logger')->info(json_encode($query));
         }
         if ($this->config['debug'] && $verify) {
-            $response->getBody()->write($query['echostr']);
+            $response->getBody()->write($query['echostr'] ?? '');
             return $response;
         }
         $response = $response->withHeader('Content-Type', 'text/xml; charset=utf-8');
