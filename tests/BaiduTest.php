@@ -1,8 +1,8 @@
 <?php
+declare(strict_types=1);
 namespace App\Tests;
-use App\Lib\Aibang;
+
 use App\Lib\Baidu;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Created by PhpStorm.
@@ -10,19 +10,17 @@ use PHPUnit_Framework_TestCase;
  * Date: 2017/5/4
  * Time: 13:19
  */
-class BaiduTest extends PHPUnit_Framework_TestCase
+class BaiduTest extends TestCase
 {
     public function testGetLineInfo()
     {
-        $baidu = new Baidu("8377E1ab1af3582362d0b75e99bdea7c");
-        $line = $baidu->getLineInfo("三墩镇", "天堂软件园");
+        $line = $this->bd->getLineInfo("三墩镇", "天堂软件园");
         $this->assertEmpty($line);
     }
 
     public function testGetLine()
     {
-        $baidu = new Baidu("8377E1ab1af3582362d0b75e99bdea7c");
-        $line = $baidu->getBusLine("2", "珠海");
+        $line = $this->bd->getBusLine("2", "珠海");
         print_r($line);
         $this->assertEmpty($line);
     }

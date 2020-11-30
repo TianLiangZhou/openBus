@@ -5,6 +5,7 @@ declare(strict_types=1);
 require __DIR__ . '/../vendor/autoload.php';
 
 use App\Http\Controllers\BusController;
+use App\Support\Env;
 use DI\ContainerBuilder;
 use Laminas\Diactoros\Response\TextResponse;
 use Laminas\Diactoros\ResponseFactory;
@@ -14,8 +15,9 @@ use Monolog\Logger;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Factory\AppFactory;
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
-$dotenv->load();
+
+$dotenv = Dotenv\Dotenv::create(Env::getRepository(), __DIR__ . '/../');
+$dotenv->safeLoad();
 
 $config = require __DIR__ . '/../config/app.php';
 

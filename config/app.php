@@ -7,16 +7,17 @@
  */
 
 return [
-    'debug' => $_ENV['DEBUG'] ?? false,
+    'debug' => env('DEBUG'),
+    'verify_mode' => env('VERIFY_MODE', false),
     'weixin' => [
-        'appid' => $_ENV['WECHAT_APPID'] ?? '',
-        'secret'=> $_ENV['WECHAT_SERECT'] ?? '',
-        'token' => $_ENV['WECHAT_TOKEN'] ?? '',
+        'appid' => env('WECHAT_APPID'),
+        'secret'=> env('WECHAT_SERECT'),
+        'token' => env('WECHAT_TOKEN'),
     ],
     'baidu' => [
-        'appid' => $_ENV['BAIDU_APPID'] ?? '',
-        'secret' => $_ENV['BAIDU_SERECT'] ?? '',
-        'sk' => $_ENV['BAIDU_SK'] ?? '',
+        'appid' => env('BAIDU_APPID'),
+        'secret' => env('BAIDU_SERECT'),
+        'sk' => env('BAIDU_SK'),
     ],
     'cache' => [
         'driver' => 'file',
