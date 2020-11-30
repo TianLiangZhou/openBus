@@ -1,0 +1,147 @@
+<style>
+  #map {
+    height: 180px;
+  }
+  .page-line-detail {
+    position: relative;
+  }
+  .line-detail-info {
+    border-top: 1px #dddddd solid;
+    padding: 8px 20px;
+    box-shadow: 0 0 4px 2px rgba(0, 0, 0, .15);
+  }
+  .line-detail-info .line-name{
+    padding-top: 15px;
+    font-size: 20px;
+    font-weight: 500;
+  }
+  .line-detail-info .line-start-end{
+    padding: 15px 0;
+    font-size: 14px;
+  }
+  .line-detail-info .line-attribute {
+    color: #999999;
+    font-size: 12px;
+    font-weight: lighter;
+  }
+
+  .line-detail-station {
+    height: calc(100vh - 295px);
+    overflow-y: scroll;
+  }
+
+  .line-detail-station ul li {
+    position: relative;
+    padding: 15px 0 15px 15px;
+    font-size: 16px;
+    border-left: 5px #5e83f0 solid;
+    cursor: pointer;
+  }
+  .line-detail-station ul li:first-child {
+    padding-top: 0;
+  }
+  .line-detail-station ul li:last-child {
+    padding-bottom: 0;
+  }
+
+
+  ul li .line-station-point {
+    position: absolute;
+    left: -8px;
+    top: 18px;
+    width: 8px;
+    height: 8px;
+    border: 2px #5e83f0 solid;
+    border-radius: 6px;
+    background: #ffffff;
+  }
+
+  ul li.current .line-station-point {
+    position: absolute;
+    left: -12px;
+    top: 18px;
+    width: 16px;
+    height: 16px;
+    border: 2px #5e83f0 solid;
+    border-radius: 12px;
+    background: #ffffff;
+  }
+
+  ul li.current .line-station-point:before {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 6px;
+    left: 4px;
+    top: 4px;
+    background: #5e83f0;
+    content: "";
+  }
+
+  .line-detail-station ul li.current {
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  ul li:first-child .line-station-point {
+    top: 0;
+  }
+
+  ul li:last-child .line-station-point {
+    top: unset;
+    bottom: 0;
+  }
+
+  .gg-shape-triangle {
+    left: -5px;
+    top: -15px;
+    position: absolute;
+    width: 5px;
+    height: 3px;
+  }
+
+</style>
+<div id="map"></div>
+<div *ngIf="loading" id="loading-spinner">
+  <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+</div>
+<div class="page-line-detail" [style.visibility]="loading ? 'hidden': 'visible'">
+  <div class="line-detail-info" *ngIf="detail != null">
+    <div class="line-name">
+      {{detail.key_name}}
+    </div>
+    <div class="line-start-end">
+      {{detail.front_name}}
+      <svg t="1606316501877" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7198" width="16" height="16">
+        <path d="M124 548c0-19.9 16.1-36 36-36h617.1L646.5 381.5c-14.1-14.1-14.1-36.9 0-50.9 14.1-14.1 36.9-14.1 50.9 0l192 192c10.3 10.3 13.4 25.8 7.8 39.2-5.6 13.5-18.7 22.2-33.3 22.2H160c-19.9 0-36-16.1-36-36z" p-id="7199" fill="#2c2c2c">
+        </path>
+      </svg>
+      {{ detail.terminal_name }}
+    </div>
+    <div class="line-attribute">
+      <span *ngIf="detail.start_time">
+        首{{detail.start_time.substring(0,2)}}:{{detail.start_time.substring(2, 4)}}
+      </span>
+      <span *ngIf="detail.end_time" style="padding: 0 4px;border-right: 1px #ededed solid; margin-right: 6px;">
+        末{{detail.end_time.substring(0,2)}}:{{detail.end_time.substring(2, 4)}}
+      </span>
+      <span *ngIf="detail.total_price">
+        票价:{{detail.total_price}}元
+      </span>
+    </div>
+  </div>
+  <div class="line-detail-station" #lineDetailStation>
+    <ul *ngIf="detail != null">
+      <li (click)="selectedStation(i, station, $event)" *ngFor="let station of detail.stations; let i = index;" [class.current]="station.selected">
+        {{station.name}}
+        <div class="line-station-detail">
+        </div>
+        <div class="gg-shape-triangle">
+          <img alt="" width="5" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAJCAYAAADtj3ZXAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAD6ADAAQAAAABAAAACQAAAACIdi6pAAAAlklEQVQoFZWRIQ+DQAxG7z+gUDgciAkslh+PnJyawowQBJLb+5YegXAwIHlcr31tSHHe+wEad+ORrz7Hq4UJ6iv98sxv1ZzAE0aozgaobp785OcSpPCCDxSxAcpbXV66cUhk8IYO8nVRd8urnq1rSxyTJEN06NIYAsQSetDnPezUvQzO6YkYFjMT/13kbhhNNWiBh7/wC8nCyhsNJQUxAAAAAElFTkSuQmCC" />
+        </div>
+        <div class="line-station-point">
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>

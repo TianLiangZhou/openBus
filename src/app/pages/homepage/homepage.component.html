@@ -1,0 +1,399 @@
+<style>
+
+  .toolbar {
+    height: 45px;
+    display: flex;
+    align-items: center;
+    color: white;
+    font-weight: 600;
+    background: #FFFFFF;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, .15);
+    border-radius: 3px;
+  }
+
+  /* background-color: #5293f5; */
+
+  .toolbar img {
+    margin: 0 16px;
+  }
+
+  .spacer {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  #searchInput {
+    box-sizing: border-box;
+    text-indent: 2px;
+    border: none;
+    height: 20px;
+    line-height: 20px;
+    padding: 0;
+    letter-spacing: .5px;
+    font-size: 14px;
+    flex: 1;
+  }
+
+  .search-bar {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .search-bar-icon {
+    font-size: 19px;
+    color: #7c8196;
+    padding: 0 5px;
+  }
+
+  #searchInput::-webkit-input-placeholder, #searchInput::-moz-placeholder {
+    font-size: 14px;
+    color: #b7b8b9;
+    font-weight: 200;
+    letter-spacing: 1px;
+    opacity: .8 !important
+  }
+
+  .search-bar-icon:hover {
+    color: #42a5f5;
+    cursor: pointer;
+  }
+
+  .director {
+    text-align: center;
+    background-color: #f8f8f8;
+    border-radius: 0 3px 3px 0;
+    height: 45px;
+    width: 45px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .director-box {
+    padding: 15px;
+    background: #3d93fd;
+  }
+
+  .directorTabs {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  .directorTabs div {
+    display: flex;
+    align-items: center;
+  }
+
+  .directorTabs .icon-bus {
+    background: url("assets/images/icon_bus.png") no-repeat 50%;;
+    background-size: 20px 19px;
+  }
+
+  .directorTabs .icon-car {
+    background: url("assets/images/icon_car.png") no-repeat 50%;;
+    background-size: 19px 19px;
+  }
+
+  .directorTabs .icon-walk {
+    background: url("assets/images/icon_walk.png") no-repeat 50%;;
+    background-size: 12px 19px;
+  }
+
+  .directorTabs div {
+    cursor: pointer;
+    opacity: .5;
+  }
+
+  .directorTabs div.current {
+    opacity: 1;
+  }
+
+  .directorTabs div i {
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+  }
+
+  .directorTabs div span {
+    color: #FFFFFF;
+    font-size: 12px;
+    margin-left: 5px;
+  }
+
+  .director-location {
+    display: flex;
+    align-items: center;
+  }
+
+  .location-switch {
+    width: 18px;
+    height: 28px;
+    cursor: pointer;
+  }
+
+  .location-switch i {
+    color: #ffffff;
+    font-size: 18px;
+  }
+
+  .director-location .location-form p {
+    position: relative;
+    height: 34px;
+    line-height: 34px;
+    font-size: 14px;
+    color: #acd7ff;
+    background-color: #3587eb;
+    border-radius: 2px;
+    margin-bottom: 10px;
+  }
+
+  .director-location .location-form p.active {
+    color: #e1f1ff;
+  }
+
+  .director-location .location-form p.active input {
+    color: #e1f1ff;
+  }
+
+  .location-form {
+    flex: 1;
+    margin: 0 30px;
+  }
+
+  .location-form p label {
+    margin-left: 10px;
+  }
+
+  .location-form p input {
+    width: 84%;
+    height: 34px;
+    line-height: 32px;
+    border: none;
+    background: transparent;
+    text-indent: 8px;
+    color: #acd7ff;
+    padding: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .location-form .line-from-submit {
+    margin-top: 17px;
+  }
+
+  .line-from-submit button {
+    float: right;
+    padding: 0 25px;
+    height: 32px;
+    line-height: 32px;
+    background-color: #559ffb;
+    border: none;
+    border-radius: 2px;
+    color: #fff;
+    font-size: 14px;
+    text-decoration: none;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .21);
+    -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .21);
+    -moz-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .21);
+  }
+
+  #lineFromInput::-webkit-input-placeholder, #lineFromInput::-moz-placeholder,
+  #lineFromTo::-webkit-input-placeholder, #lineFromTo::-moz-placeholder {
+    color: #acd7ff;
+  }
+  #map {
+    height: 180px;
+    border: 1px solid #dedede;
+    margin: 14px 8px;
+  }
+  .realtime {
+    padding: 0 10px;
+  }
+  .realtime .location {
+    margin-bottom: 20px;
+    background: #FFFFFF;
+    box-shadow: 0 0 4px 2px rgba(0, 0, 0, .15);
+    border-radius: 3px;
+    padding: 0 20px;
+  }
+  .location-station {
+    display: flex;
+  }
+  .location .location-header {
+    padding: 20px 0;
+    border-bottom: 1px #eeeeee solid;
+  }
+  .location-header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .location-header .location-station-name {
+    font-size: 16px;
+    font-weight: bold;
+    padding-left: 8px;
+  }
+  .location-header .location-station-right {
+    color: #999999;
+    font-size: 12px;
+  }
+  .location-body .location-body-lines {
+    padding: 15px 0;
+  }
+  .location-body-lines p {
+    margin: 0 0 8px 0;
+  }
+  .location-body-lines p.line-endpoint-time {
+    color: #999;
+    font-size: 13px;
+  }
+  .location-body-lines p .line-name{
+    color: #000;
+    font-size: 18px;
+    font-weight: 500;
+    display: inline-block;
+    max-width: 268px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .no-border {
+    border: none !important;
+  }
+  .location-body-line-names {
+    color: #999999;
+    font-weight: lighter;
+    font-size: 13px;
+    padding-bottom: 15px;
+  }
+</style>
+
+<div *ngIf="loading" id="loading-spinner">
+  <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+</div>
+<!-- Toolbar -->
+<div id="homepage" [style.visibility]="loading ? 'hidden': 'visible'">
+  <div class="toolbar">
+    <img
+      width="40"
+      alt="Angular Logo"
+      src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg=="
+    />
+    <div class="spacer">
+      <input type="text" id="searchInput" placeholder="搜索位置、公交站、地铁站" maxlength="256" autocomplete="off"/>
+      <div class="search-bar">
+        <i class="iconfont icon-search search-bar-icon"></i>
+      </div>
+    </div>
+    <div class="director">
+      <img alt="" width="16.5" height="18"
+           src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB8AAAAkCAYAAABxE+FXAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDIxIDc5LjE1NTc3MiwgMjAxNC8wMS8xMy0xOTo0NDowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTQgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RTdGRDQzNzk1MUE0MTFFNkJENThBRUM3QkJFQTlBNEMiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RTdGRDQzN0E1MUE0MTFFNkJENThBRUM3QkJFQTlBNEMiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpFN0ZENDM3NzUxQTQxMUU2QkQ1OEFFQzdCQkVBOUE0QyIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpFN0ZENDM3ODUxQTQxMUU2QkQ1OEFFQzdCQkVBOUE0QyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PrQHkWQAAAG5SURBVHja5Jg/KEVRHMfPfe+RpEgkw/MkUiKDwYCIRFGKzUp5A7IYrJJBBpNFPYmISGGQ9J56CwaDxWAji2LwL0We76nfIN0/597zx+BXn+Gdezqf3vnd3/mdrlWbyDDByAdp8AB6wBuTjJDgPAskQB1oA0s0ZkQ+Dvp//B4EUybkjWDOZnwG9OmUF4JNkO2QijVKhXI5X3wFxFzm5IE9UKxaPgl6BdYoBzsOuxNI3kQ5FY0WsKhCXgQ2QJbPtYbAhIyc53kVRAO+Q/OgK6ic1263RPWEqTqq/cpbwTSTD34MH4ACUXkJ5TnM1EQl2PZaL0QTeJ5LmdroAAtecp7nTqYnRkHcTT7G9Mas04MI5dsrMi5HsPaWqiX+rzxiYH1e81XU/Sro/TnjnVCXPEadrgHk2jxvBx+q5VG669UIzG1WJc8BA/RvLZM5LwMjdA/wE2lZeT0Y9nmFegGnYF9WHhco1ztwCa7BDXhWte1O4k9wDpLg1mSdX4F1cG/ykOGHxy44cmlEWuRfYJm22vjZvuVXrEp+AVJ/0dXe6eKptaU+2ozxLxPH4Em3/PDXZ5BX2uoTmW37FmAA/hxExSsxtXsAAAAASUVORK5CYII="
+           draggable="false">
+    </div>
+  </div>
+  <!-- directorBox -->
+  <div class="director-box">
+    <div class="director-box-warp">
+      <div class="directorTabs">
+        <div (click)="director(dir.alias)" id="{{dir.alias}}Tab" [class.current]="dir.selected"
+             *ngFor="let dir of directors; let i = index;">
+          <i class="{{dir.icon}}"></i>
+          <span>{{dir.name}}</span>
+        </div>
+      </div>
+      <div class="director-location">
+        <div class="location-switch">
+          <i class="iconfont icon-switchroute" (click)="exchange()"></i>
+        </div>
+        <div class="location-form">
+          <p class="line-location-from" [class.active]="locationFromActive">
+            <label for="lineFromInput">起</label>
+            <input id="lineFromInput" #fromInput name="locationFrom" [(ngModel)]="locationFromValue"
+                   (focus)="fromInputFocus(fromInput)" (blur)="fromInputBlur(fromInput)" placeholder="请输入起点" value=""
+                   autocomplete="off"/>
+            <i class="iconfont icon-clear" *ngIf="locationFromValue.length > 0" (click)="locationFromValue=''"></i>
+          </p>
+          <p class="line-location-to" [class.active]="locationToActive">
+            <label for="lineFromTo">终</label>
+            <input id="lineFromTo" #to (focus)="toInputFocus(to)" name="locationTo" [(ngModel)]="locationToValue"
+                   (blur)="toInputBlur(to)" placeholder="请输入终点" value="" autocomplete="off"/>
+            <i class="iconfont icon-clear" *ngIf="locationToValue.length > 0" (click)="locationToValue=''"></i>
+          </p>
+
+          <div class="line-from-submit">
+            <button (click)="lineFind()" type="button">{{submit}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="map">
+  </div>
+  <div class="realtime">
+    <div class="location" *ngFor="let station of stations">
+      <div class="location-header">
+        <div class="location-station">
+          <img alt="{{ station.name }}" width="15"  height="18"  src="assets/images/amap/drive_bus_station.webp">
+          <span class="location-station-name">{{ station.name }}</span>
+          <span style="font-weight: lighter;font-size: 14px;">(站台{{ station.direction }})</span>
+        </div>
+        <div class="location-station-right">
+          {{ station.distance }}米
+        </div>
+      </div>
+      <div class="location-body">
+        <div class="location-body-lines" (click)="lineDetail(line)" *ngFor="let line of station.lines">
+          <p>
+            <span class="line-name">{{ line.key_name }}</span>
+            <ng-container *ngIf="line.now_real_trip.sub_text.length > 0">
+              <span style="float: right;font-size: 16px;font-weight: 600;color: #999999">{{ line.now_real_trip.sub_text }}</span>
+            </ng-container>
+            <ng-container *ngIf="line.now_real_trip.arrival">
+              <span style="float: right;color:#58AE95;font-size: 16px;font-weight: 600">{{ line.now_real_trip.arrival }} · {{ line.now_real_trip.station_left }}<span style="font-size: 16px;color:#000;font-weight: lighter; margin-left: 5px;">到达</span></span>
+            </ng-container>
+          </p>
+          <p class="line-endpoint-time">
+            <span>开往 {{ line.end_point }}</span>
+            <ng-container *ngIf="line.next_real_trip.sub_text">
+              <span style="float: right">
+                {{ line.next_real_trip.sub_text }}
+              </span>
+            </ng-container>
+            <ng-container *ngIf="line.next_real_trip.arrival">
+              <span style="float: right">
+                下辆 {{ line.next_real_trip.arrival }}·{{ line.next_real_trip.station_left }}
+              </span>
+            </ng-container>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="realtime">
+    <div style="color: #999999;font-size: 13px;margin: 7px 0;">其它附近站点</div>
+    <div class="location" *ngFor="let station of nearbyStations">
+      <div class="location-header no-border">
+        <div class="location-station">
+          <img alt="{{ station.name }}" width="15"  height="18"  src="assets/images/amap/drive_bus_station.webp">
+          <span class="location-station-name">{{ station.name }}</span>
+          <span style="font-weight: lighter;font-size: 14px;">(站台{{ station.direction }})</span>
+        </div>
+        <div class="location-station-right">
+          {{ station.distance }}米
+        </div>
+      </div>
+      <div class="location-body-lines">
+        <div class="location-body-line-names">
+          {{ station.lines_name }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
