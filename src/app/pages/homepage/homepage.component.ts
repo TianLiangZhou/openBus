@@ -192,15 +192,16 @@ export class HomepageComponent implements OnInit {
               lines[lineIndex]["end_point"] = names[3];
               lines[lineIndex]["sub_text"] = "";
               lines[lineIndex]["now_real_trip"] = {
-                "arrival": "",
-                "station_left": "",
+                "arrival": 0,
+                "station_left": 0,
                 "sub_text": "",
               };
               lines[lineIndex]["next_real_trip"] = {
-                "arrival": "",
-                "station_left": "",
+                "arrival": 0,
+                "station_left": 0,
                 "sub_text": "",
               };
+              lines[lineIndex]["sub_status"] = "100";
               stationIndexes[item.stationid + item.lineid] = [index, lineIndex];
               lineIdArray.push(item.lineid)
               stationIdArray.push(item.stationid)
@@ -226,6 +227,8 @@ export class HomepageComponent implements OnInit {
             const index = stationIndexes[stationIndex][0];
             const lineIndex = stationIndexes[stationIndex][1];
             stations[index]["lines"][lineIndex]["sub_text"] = item.sub_text;
+            stations[index]["lines"][lineIndex]["status"] = item.status;
+            stations[index]["lines"][lineIndex]["sub_status"] = item.sub_status;
             switch (item.status) {
               case "1":
                 const trips = item.trip;
@@ -233,15 +236,27 @@ export class HomepageComponent implements OnInit {
                   stations[index]["lines"][lineIndex]["now_real_trip"]["sub_text"] = item.sub_text;
                   break;
                 }
-                stations[index]["lines"][lineIndex]["now_real_trip"] = {
-                  "arrival": +trips[0].arrival > 0 ? Math.ceil(+trips[0].arrival / 60) + "分钟" : "0",
-                  "station_left": trips[0].station_left + "站",
+
+                const nowRealTrip = {
+                  "arrival": +trips[0].arrival > 0 ? Math.ceil(+trips[0].arrival / 60) : 0,
+                  "station_left": +trips[0].station_left,
                   "sub_text": trips[0].arrival == "0" ? "已到达" : "",
                 };
+                if (trips[0].arrival == "0" && trips[0].station_left == "0") {
+                  nowRealTrip["sub_text"] = "车已到站";
+                }
+                if (+trips[0].arrival <= 90 && trips[0].station_left == "0") {
+                  nowRealTrip["arrival"] = 0;
+                  nowRealTrip["sub_text"] = "车即将进站";
+                }
+                if (+trips[0].arrival > 90 && trips[0].station_left == "0") {
+                  nowRealTrip["station_left"] = 1;
+                }
+                stations[index]["lines"][lineIndex]["now_real_trip"] = nowRealTrip;
                 if (trips.length > 1) {
                   stations[index]["lines"][lineIndex]["next_real_trip"] = {
-                    "arrival": +trips[1].arrival > 0 ? Math.ceil(+trips[1].arrival / 60) + "分钟" : "0",
-                    "station_left": trips[1].station_left + "站",
+                    "arrival": +trips[1].arrival > 0 ? Math.ceil(+trips[1].arrival / 60) : 0,
+                    "station_left": +trips[1].station_left + 1,
                     "sub_text": "",
                   };
                 }

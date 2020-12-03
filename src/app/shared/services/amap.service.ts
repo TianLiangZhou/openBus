@@ -7,7 +7,7 @@ import {
   LineDetailExResponse,
   LineDetailResponse,
   LineResponse,
-  LineStationResponse, NearByLinesResponse
+  LineStationResponse, NearByLinesResponse, PoiSearchResponse
 } from "../data/amap";
 
 @Injectable({
@@ -119,6 +119,15 @@ export class AmapService {
     const url = this.gateway + '/v3/geocode/geo?key=' + this.secret + '&address=' + address;
     return this.http.get(url,{
       headers: this.commonHeaders,
+    })
+  }
+
+  getPoiSearch(words: string, category: string = "999901%7C999907%7C999916%7C150700"): Observable<PoiSearchResponse> {
+    const data = {...this.commonData, ...{"words": words, "adcode": "true", "category": category}};
+    const url = this.gateway + '/ws/mapapi/poi/tipslite';
+    return this.http.get<PoiSearchResponse>(url, {
+      headers: this.commonHeaders,
+      params: new HttpParams({fromObject: data})
     })
   }
 

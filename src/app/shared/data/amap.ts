@@ -186,47 +186,47 @@ export interface Station {
 }
 
 export interface BuslineList {
-  front_name: string;
-  areacode: string;
-  expect_open_date: string;
-  total_price_air: string;
-  bounds: string;
-  direc: string;
-  id: string;
-  xs: string;
-  is_emergency: number;
-  terminal_spell: string;
-  time_desc_json: TimeDescJson;
-  terminal_name: string;
-  color: string;
-  tips_type: string;
-  basic_price: string;
-  timetable: string;
-  type: string;
-  start_time: string;
-  key_name: string;
-  status: string;
-  ic_card: string;
-  irregular_time: IrregularTime;
-  description: string;
-  emergency: Emergency;
-  auto: string;
-  company: string;
-  front_spell: string;
-  description1: string;
-  ys: string;
-  total_price: string;
-  name: string;
-  basic_price_air: string;
-  stations: Station[];
-  interval: string;
-  air: string;
-  alias: string;
-  length: string;
-  end_time: string;
-  line_feature: string;
-  loop: string;
-  is_realtime: string;
+  front_name?: string;
+  areacode?: string;
+  expect_open_date?: string;
+  total_price_air?: string;
+  bounds?: string;
+  direc?: string;
+  id?: string;
+  xs?: string;
+  is_emergency?: number;
+  terminal_spell?: string;
+  time_desc_json?: TimeDescJson;
+  terminal_name?: string;
+  color?: string;
+  tips_type?: string;
+  basic_price?: string;
+  timetable?: string;
+  type?: string;
+  start_time?: string;
+  key_name?: string;
+  status?: string;
+  ic_card?: string;
+  irregular_time?: IrregularTime;
+  description?: string;
+  emergency?: Emergency;
+  auto?: string;
+  company?: string;
+  front_spell?: string;
+  description1?: string;
+  ys?: string;
+  total_price?: string;
+  name?: string;
+  basic_price_air?: string;
+  stations?: Station[];
+  interval?: string;
+  air?: string;
+  alias?: string;
+  length?: string;
+  end_time?: string;
+  line_feature?: string;
+  loop?: string;
+  is_realtime?: string;
 }
 
 export interface LineDetailResponse {
@@ -354,3 +354,33 @@ export interface NearByLinesResponse {
 }
 
 
+export interface Tip {
+  category: string;
+  name: string;
+  district: string;
+  ignore_district: string;
+  adcode: string;
+  rank: string;
+  datatype_spec: string;
+  datatype: string;
+  terminals: string;
+  line_distance: string;
+  city_name: string;
+  poiid: string;
+  province_name: string;
+}
+
+export interface TipList {
+  tip: Tip;
+}
+
+export interface PoiSearchResponse {
+  code: string;
+  timestamp: string;
+  tip_list: TipList[];
+  is_general_search: string;
+  version: string;
+  result: string;
+  message: string;
+  total: string;
+}
