@@ -1,30 +1,45 @@
-import { Component, OnInit } from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {debounceTime, distinctUntilChanged, map, switchMap} from "rxjs/operators";
 import {PoiSearchResponse, TipList} from "../../shared/data/amap";
-import {Observable, Subject} from "rxjs";
+import {Observable, of, Subject} from "rxjs";
 import {AmapService} from "../../shared/services/amap.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.sass']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, AfterViewInit {
 
   private term$ = new Subject<string>();
   complete$: Observable<TipList[]>;
   keywords: string;
 
-  constructor(private amapService: AmapService, private route: ActivatedRoute) {
+  @ViewChild('searchContent', {static: true}) searchContent: ElementRef;
+  loading = true;
+
+  constructor(private amapService: AmapService,
+              private router: Router,
+              private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
+    const content = (this.searchContent.nativeElement as HTMLDivElement);
+    content.style.height = (window.innerHeight - 68) + "px";
     this.complete$ = this.term$.pipe(
       debounceTime(400),
       distinctUntilChanged(),
-      switchMap(term => this.amapService.getPoiSearch(term)),
+      switchMap(term => {
+        if (term.length < 1) {
+          return of<PoiSearchResponse>({tip_list: []});
+        }
+        this.loading = true;
+        return this.amapService.getPoiSearch(term)
+      }),
       map<PoiSearchResponse, TipList[]>(res => {
+        console.log(res)
+        this.loading = false;
         if (res.hasOwnProperty("tip_list")) {
           if (res.tip_list.length > 0) {
             return res.tip_list;
@@ -36,9 +51,36 @@ export class SearchComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       if (params.hasOwnProperty("keywords") && params["keywords"].length > 0 ) {
         this.keywords = params["keywords"];
-        this.term$.next(params["keywords"])
       }
     });
   }
 
+
+
+  onSearch($event: KeyboardEvent) {
+    this.keywords = ($event.target as HTMLInputElement).value;
+    this.term$.next(this.keywords);
+  }
+
+  ngAfterViewInit(): void {
+    this.term$.next(this.keywords);
+  }
+
+  onClean() {
+    this.keywords = "";
+    this.term$.next("");
+    (document.getElementById('searchInput') as HTMLInputElement).focus();
+  }
+
+  itemClick(item: TipList) {
+    switch (item.tip.category) {
+      case "999901": // 线路类型
+        this.router.navigateByUrl("/line/" + item.tip.poiid).then(() => {
+
+        });
+        break;
+      case "150700": // 站点名类型
+        break;
+    }
+  }
 }

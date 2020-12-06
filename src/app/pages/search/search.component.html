@@ -4,14 +4,17 @@
     height: 100vh;
   }
   .search-header {
+    width: 100%;
     background: #ffffff;
-    padding: 15px 0;
+    padding: 10px 0;
+    display: flex;
   }
   .search-form {
+    flex: 1;
     display: flex;
     background: #f2f5f6;
-    padding: 15px 0;
-    margin: 0 25px;
+    padding: 10px 0;
+    margin: 0 25px 0 10px;
     border-radius: 4px;
     align-items: center;
   }
@@ -40,39 +43,105 @@
     letter-spacing: 1px;
     opacity: 1 !important
   }
+  .search-content {
+    padding-top: 6px;
+    overflow-y: scroll;
+  }
+
+  .search-bar-complete {
+    background: #ffffff;
+  }
+  .search-bar-complete ul {
+    margin: 0;
+    padding: 0;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, .15);
+  }
+
+  .search-bar-complete ul li {
+    color: #000000;
+    padding: 15px 15px 15px 20px;
+    border-bottom: 1px solid #ededed;
+  }
+
+  ul li .complete-list-item {
+    cursor: pointer;
+  }
+
+  .search-item-title-dis {
+    display: flex;
+    justify-content: space-between;
+  }
+  .search-item-title-dis .item-district {
+    font-weight: normal;
+    color: #999999;
+    font-size: 12px;
+  }
+
+  .search-bar-complete li .search-item-subTitle {
+    font-size: 12px;
+    color: #999999;
+    padding-top: 4px;
+    font-weight: normal;
+  }
+  .search-input-clear {
+    cursor: pointer;
+  }
+  .search-default-placeholder {
+    text-align: center;
+    padding: 30px 0;
+    color: #999999;
+  }
 
 </style>
+<div *ngIf="loading" id="loading-spinner">
+  <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+</div>
 <div class="search-page">
   <div class="search-header">
+    <img
+      width="32"
+      height="32"
+      alt="Logo"
+      src="data:image/svg+xml;base64,Cgk8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHZlcnNpb249IjEuMSIgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KCgoJCTxkZWZzPgoJCQk8ZyBpZD0iYmFja2dyb3VuZCI+CjxwYXRoIGZpbGw9InVybCgjYmFja2dyb3VuZC1ncmFkaWVudCkiIHN0cm9rZT0ibm9uZSIgZD0iIE0gOTcuMiAyLjggUSA5NC4zNSAwIDkwLjYgMCBMIDkuNCAwIFEgNS41NSAwIDIuOCAyLjggMCA1LjU1IDAgOS40IEwgMCA5MC42IFEgMCA5NC4zNSAyLjggOTcuMiA1LjU1IDEwMCA5LjQgMTAwIEwgOTAuNiAxMDAgUSA5NC4zNSAxMDAgOTcuMiA5Ny4yIDEwMCA5NC4zNSAxMDAgOTAuNiBMIDEwMCA5LjQgUSAxMDAgNS41NSA5Ny4yIDIuOCBaIi8+CjwvZz48ZyBpZD0iYm90dG9tLTEiPgo8cGF0aCBmaWxsPSIjRkZGRkZGIiBmaWxsLW9wYWNpdHk9IjAuMzAxOTYwNzg0MzEzNzI1NDciIHN0cm9rZT0ibm9uZSIgZD0iIE0gOTAuNiAyLjM1IFEgOTQuNDUgMi4zNSA5Ny4zIDUuMDUgOTkuOSA3LjY1IDEwMCAxMS41NSBMIDEwMCA5LjQgUSAxMDAgNS40IDk3LjMgMi43IDk0LjQ1IDAgOTAuNiAwIEwgOS40IDAgUSA1LjQgMCAyLjcgMi43IDAgNS40IDAgOS40IEwgMCAxMS41NSBRIDAuMSA3LjY1IDIuNyA1LjA1IDUuNCAyLjM1IDkuNCAyLjM1IEwgOTAuNiAyLjM1IFoiLz4KPC9nPjxtYXNrIGlkPSJtYXNrIj4KPHBhdGggZmlsbD0iI0ZGRkZGRiIgc3Ryb2tlPSJub25lIiBkPSIgTSA5Ny4yIDIuOCBRIDk0LjM1IDAgOTAuNiAwIEwgOS40IDAgUSA1LjU1IDAgMi44IDIuOCAwIDUuNTUgMCA5LjQgTCAwIDkwLjYgUSAwIDk0LjM1IDIuOCA5Ny4yIDUuNTUgMTAwIDkuNCAxMDAgTCA5MC42IDEwMCBRIDk0LjM1IDEwMCA5Ny4yIDk3LjIgMTAwIDk0LjM1IDEwMCA5MC42IEwgMTAwIDkuNCBRIDEwMCA1LjU1IDk3LjIgMi44IFoiLz4KPC9tYXNrPgoJCQkKCTxsaW5lYXJHcmFkaWVudCBpZD0iYmFja2dyb3VuZC1ncmFkaWVudCIgeDE9IjAiIHkxPSIwIiB5Mj0iMSIgeDI9IjAiID4KCQk8c3RvcCBzdG9wLWNvbG9yPSIjZmZmZmZmIiBvZmZzZXQ9IjAlIi8+CgkJPHN0b3Agc3RvcC1jb2xvcj0iI2ZmZmZmZiIgb2Zmc2V0PSIxMDAlIi8+Cgk8L2xpbmVhckdyYWRpZW50PgoKCQkJCgkJCQoJCQk8ZyB0cmFuc2Zvcm09InNjYWxlKDIuMDgzMzMzMzMzMzMzMzMzNSkiIGlkPSJwaWN0dXJlIj48cGF0aCBkPSJNMjQgMEMxMyAwIDQgOSA0IDIwYzAgNi41IDMuNSAxMS40IDcuOCAxNS45bDggOEwyNCA0OGwzLjctMy43IDguNC04LjRDNDAuMSAzMiA0NCAyNi40IDQ0IDIwIDQ0IDkgMzUgMCAyNCAwem0wIDM1Yy04LjEgMC0xNC43LTYuNi0xNC43LTE0LjdTMTUuOSA1LjYgMjQgNS42czE0LjcgNi42IDE0LjcgMTQuN1MzMi4xIDM1IDI0IDM1eiBNMjggMTAuM2gtOGMtMi4yIDAtNCAxLjgtNCA0djEyYzAgLjcuNiAxLjMgMS4zIDEuM1YyOWMwIC43LjYgMS4zIDEuMyAxLjNIMjBjLjcgMCAxLjMtLjYgMS4zLTEuM3YtMS4zaDUuM1YyOWMwIC43LjYgMS4zIDEuMyAxLjNoMS4zYy43IDAgMS4zLS42IDEuMy0xLjN2LTEuM2MuNyAwIDEuMy0uNiAxLjMtMS4zdi0xMmMuMi0yLjMtMS42LTQuMS0zLjgtNC4xem0tNy42IDEuNWMwLS4zLjItLjUuNS0uNWg2LjJjLjMgMCAuNS4yLjUuNXYxLjFjMCAuMy0uMi41LS41LjVoLTYuMmMtLjMgMC0uNS0uMi0uNS0uNXYtMS4xem0tMS43IDE0LjVjLS43IDAtMS4zLS42LTEuMy0xLjMgMC0uNy42LTEuMyAxLjMtMS4zLjcgMCAxLjMuNiAxLjMgMS4zIDAgLjctLjYgMS4zLTEuMyAxLjN6bTEwLjYgMGMtLjcgMC0xLjMtLjYtMS4zLTEuMyAwLS43LjYtMS4zIDEuMy0xLjNzMS4zLjYgMS4zIDEuM2MuMS43LS41IDEuMy0xLjMgMS4zem0xLjQtNEgxNy4zdi04aDEzLjN2OHoiLz48L2c+CgkJCQoJPGxpbmVhckdyYWRpZW50IGlkPSJwaWN0dXJlLWdyYWRpZW50IiB4MT0iMCIgeTE9IjAiIHkyPSIxIiB4Mj0iMCIgPgoJCTxzdG9wIHN0b3AtY29sb3I9IiMwMDkxZmYiIG9mZnNldD0iMCUiLz4KCQk8c3RvcCBzdG9wLWNvbG9yPSIjMDA5MWZmIiBvZmZzZXQ9IjEwMCUiLz4KCTwvbGluZWFyR3JhZGllbnQ+CgoJCTwvZGVmcz4KCgkJCgoJCQk8dXNlIHhsaW5rOmhyZWY9IiNiYWNrZ3JvdW5kIiBmaWxsPSJ1cmwoI2JhY2tncm91bmQtZ3JhZGllbnQpIiAvPgoKCQkKCgkJCTxnIG1hc2s9InVybCgjbWFzaykiPgoJCQkJPGcgdHJhbnNmb3JtPSIKCQkJCSAgICAgICAgdHJhbnNsYXRlKAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDUwIDUwCikKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRyYW5zbGF0ZSgwIDApICBzY2FsZSgwLjgpICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRyYW5zbGF0ZSgKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtNTAgLTUwCikiPgoJCQkJCQk8dXNlIHhsaW5rOmhyZWY9IiNwaWN0dXJlIiBmaWxsPSJ1cmwoI3BpY3R1cmUtZ3JhZGllbnQpIiAgLz4KCQkJCTwvZz4KCQkJPC9nPgoKCQk8dXNlIHhsaW5rOmhyZWY9IiNib3R0b20tMSIgLz4KCgoKCTwvc3ZnPgo="
+    />
     <div class="search-form">
       <div class="search-bar">
         <i class="iconfont icon-search search-bar-icon"></i>
       </div>
-      <input type="search" [value]="this.keywords" #inputElement id="searchInput" placeholder="搜索位置、公交站、地铁站" maxlength="256" autocomplete="off"/>
-      <div class="search-input-clear">
+      <input type="search" [value]="this.keywords" (keyup)="onSearch($event)" id="searchInput" placeholder="搜索位置、公交站、地铁站" maxlength="256" autocomplete="off"/>
+      <div class="search-input-clear" (click)="onClean()" *ngIf="keywords.length > 0">
         <img alt="" style="padding: 0 10px" width="24" height="24" src="assets/images/amap/common_banner_close_btn.webp">
       </div>
     </div>
   </div>
-  <div class="search-bar-complete">
-    <div class="complete-list">
-      <ul>
-        <li *ngFor="let item of (complete$ | async)">
-          <div class="complete-list-item">
-            <div class="search-item-title-dis">
-              <div class="item-title">
-                {{ item.tip.name }}
+  <div class="search-content" #searchContent>
+    <div class="search-default-placeholder" *ngIf="this.keywords.length < 1">
+     你可以搜索公交线路、车站、位置
+    </div>
+
+    <div class="search-bar-complete" *ngIf="this.keywords.length > 0">
+      <div class="complete-list">
+        <ul>
+          <li *ngFor="let item of (complete$ | async)" (click)="itemClick(item)">
+            <div class="complete-list-item">
+              <div class="search-item-title-dis">
+                <div class="item-title">
+                  <img *ngIf="item.tip.category=='999901'" width="14" height="14" alt="" src="assets/images/amap/default_generalsearch_sugg_buslineicon_normal_16x16_@3x.png">
+                  <img *ngIf="item.tip.category=='150700'" width="14" height="14"  alt="" src="assets/images/amap/default_generalsearch_homepage_history_bus_16x16_@3x.png">
+                  <img *ngIf="item.tip.category=='1507'" width="14" height="14"  alt="" src="assets/images/amap/default_generalsearch_sugg_buslineicon_normal_16x16_@3x.png">
+                  {{ item.tip.name }}
+                </div>
+                <div class="item-district">
+                  {{ item.tip.district }}
+                </div>
               </div>
-              <div class="item-district">
-                {{ item.tip.district }}
+              <div class="search-item-subTitle" *ngIf="item.tip.terminals">
+                {{ item.tip.terminals }}
               </div>
             </div>
-            <div class="search-item-subTitle" *ngIf="item.tip.terminals">
-              {{ item.tip.terminals }}
-            </div>
-          </div>
-        </li>
-      </ul>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

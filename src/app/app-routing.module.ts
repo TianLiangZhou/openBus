@@ -13,7 +13,7 @@ const routes: Routes = [
   },
   {
     path: 'search',
-    loadChildren: () => import('./pages/search/search-routing.module').then(m => m.SearchRoutingModule)
+    loadChildren: () => import('./pages/search/search.module').then(m => m.SearchModule)
   },
   {path: '**', redirectTo: ''},
 ];

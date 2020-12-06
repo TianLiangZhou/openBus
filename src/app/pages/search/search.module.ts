@@ -1,8 +1,11 @@
 import { NgModule } from '@angular/core';
-import { SearchRoutingModule } from './search-routing.module';
 import {SearchComponent} from "./search.component";
 import {CoreModule} from "../../shared/core/core/core.module";
+import {RouterModule, Routes} from "@angular/router";
 
+const routes: Routes = [
+  {path : '', component : SearchComponent}
+];
 
 @NgModule({
   declarations: [
@@ -10,7 +13,7 @@ import {CoreModule} from "../../shared/core/core/core.module";
   ],
   imports: [
     CoreModule,
-    SearchRoutingModule,
+    RouterModule.forChild(routes),
   ],
   exports: [
     SearchComponent

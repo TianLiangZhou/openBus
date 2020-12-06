@@ -375,12 +375,12 @@ export interface TipList {
 }
 
 export interface PoiSearchResponse {
-  code: string;
-  timestamp: string;
+  code?: string;
+  timestamp?: string;
   tip_list: TipList[];
-  is_general_search: string;
-  version: string;
-  result: string;
-  message: string;
-  total: string;
+  is_general_search?: string;
+  version?: string;
+  result?: string;
+  message?: string;
+  total?: string;
 }

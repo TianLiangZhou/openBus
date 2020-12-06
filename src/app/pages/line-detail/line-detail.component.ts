@@ -245,11 +245,7 @@ export class LineDetailComponent implements OnInit, AfterViewInit {
       this.polyline.setPath(path);
     }
     this.map.add(this.marker);
-    if (this.amapService.location != null) {
-      this.map.setZoomAndCenter(14, this.amapService.location.position, false, 500);
-    } else {
-      this.map.setZoom(14);
-    }
+    this.map.setZoomAndCenter(14, pos, false, 500);
     // 调整视野达到最佳显示区域
     // this.map.setFitView(this.marker);
   }

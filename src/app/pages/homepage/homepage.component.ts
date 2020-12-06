@@ -1,9 +1,8 @@
 import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {AmapService} from "../../shared/services/amap.service";
-import {forkJoin, Observable, of, Subject} from "rxjs";
+import {forkJoin} from "rxjs";
 import {GeolocationPosition, InfoliteResponse, LineResponse, PoiSearchResponse, TipList} from "../../shared/data/amap";
 import {Router} from "@angular/router";
-import {debounceTime, distinctUntilChanged, map, switchMap} from "rxjs/operators";
 
 @Component({
   selector: 'app-homepage',
