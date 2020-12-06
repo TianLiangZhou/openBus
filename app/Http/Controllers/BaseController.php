@@ -5,6 +5,7 @@
  * Date: 2016/7/1
  * Time: 17:45
  */
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 

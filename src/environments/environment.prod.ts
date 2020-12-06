@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  gateway: 'https://openbus.loocode.com',
+  name: "公交通",
 };

@@ -1,0 +1,78 @@
+<style>
+  .search-page {
+    background: #eff0f1;
+    height: 100vh;
+  }
+  .search-header {
+    background: #ffffff;
+    padding: 15px 0;
+  }
+  .search-form {
+    display: flex;
+    background: #f2f5f6;
+    padding: 15px 0;
+    margin: 0 25px;
+    border-radius: 4px;
+    align-items: center;
+  }
+  .search-form .search-bar{
+    padding: 0 8px 0 15px;
+    color: #999999;
+  }
+
+  #searchInput {
+    box-sizing: border-box;
+    text-indent: 2px;
+    border: none;
+    height: 24px;
+    line-height: 24px;
+    padding: 0;
+    letter-spacing: .5px;
+    font-size: 14px;
+    flex: 1;
+    background: #f2f5f6;
+  }
+
+  #searchInput::-webkit-input-placeholder, #searchInput::-moz-placeholder {
+    font-size: 14px;
+    color: #b7b8b9;
+    font-weight: normal;
+    letter-spacing: 1px;
+    opacity: 1 !important
+  }
+
+</style>
+<div class="search-page">
+  <div class="search-header">
+    <div class="search-form">
+      <div class="search-bar">
+        <i class="iconfont icon-search search-bar-icon"></i>
+      </div>
+      <input type="search" [value]="this.keywords" #inputElement id="searchInput" placeholder="搜索位置、公交站、地铁站" maxlength="256" autocomplete="off"/>
+      <div class="search-input-clear">
+        <img alt="" style="padding: 0 10px" width="24" height="24" src="assets/images/amap/common_banner_close_btn.webp">
+      </div>
+    </div>
+  </div>
+  <div class="search-bar-complete">
+    <div class="complete-list">
+      <ul>
+        <li *ngFor="let item of (complete$ | async)">
+          <div class="complete-list-item">
+            <div class="search-item-title-dis">
+              <div class="item-title">
+                {{ item.tip.name }}
+              </div>
+              <div class="item-district">
+                {{ item.tip.district }}
+              </div>
+            </div>
+            <div class="search-item-subTitle" *ngIf="item.tip.terminals">
+              {{ item.tip.terminals }}
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -11,7 +11,10 @@ const routes: Routes = [
     path: 'line/:id',
     loadChildren: () => import('./pages/line-detail/line-detail.module').then(m => m.LineDetailModule)
   },
-
+  {
+    path: 'search',
+    loadChildren: () => import('./pages/search/search-routing.module').then(m => m.SearchRoutingModule)
+  },
   {path: '**', redirectTo: ''},
 ];
 

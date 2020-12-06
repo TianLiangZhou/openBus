@@ -1,9 +1,9 @@
 import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {AmapService} from "../../shared/services/amap.service";
-import {forkJoin} from "rxjs";
-import {GeolocationPosition, InfoliteResponse, LineResponse} from "../../shared/data/amap";
+import {forkJoin, Observable, of, Subject} from "rxjs";
+import {GeolocationPosition, InfoliteResponse, LineResponse, PoiSearchResponse, TipList} from "../../shared/data/amap";
 import {Router} from "@angular/router";
-import {makeBindingParser} from "@angular/compiler";
+import {debounceTime, distinctUntilChanged, map, switchMap} from "rxjs/operators";
 
 @Component({
   selector: 'app-homepage',
@@ -34,6 +34,7 @@ export class HomepageComponent implements OnInit {
 
   nearbyStations = [];
 
+  isFixedToolbar: boolean = false;
 
   constructor(
     private amapService: AmapService,
@@ -128,10 +129,38 @@ export class HomepageComponent implements OnInit {
 
   @HostListener("window:scroll", ['$event'])
   onScroll($event) {
-    console.log($event);
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+    this.isFixedToolbar = window.scrollY >= 45;
+    const scrollY = window.scrollY;
+    let opacity
+    if (scrollY >= 45) {
+      if (scrollY <= 150) {
+        opacity = scrollY / 150;
+      } else {
+        opacity = 1;
+      }
+    } else {
+      opacity = 1;
+    }
+    (document.querySelector(".toolbar") as HTMLDivElement).style.opacity = opacity;
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) { // 拉到最底部
       console.log("scroll");
     }
+  }
+
+
+  lineDetail(line: any) {
+    this.amapService.selectedLine = line;
+    this.router.navigateByUrl("/line/" + line.lineid).then((redirect) => {
+    })
+  }
+
+  searchClick(inputElement: HTMLInputElement) {
+    this.router.navigate(["/search"], {
+      queryParams: {
+        "keywords": inputElement.value
+      }
+    }).then((redirect) => {
+    })
   }
 
   private loadData(geolocation: GeolocationPosition) {
@@ -339,11 +368,5 @@ export class HomepageComponent implements OnInit {
       touchZoom: false,
       // viewMode:'3D'//使用3D视图
     });
-  }
-
-  lineDetail(line: any) {
-    this.amapService.selectedLine = line;
-    this.router.navigateByUrl("/line/" + line.lineid).then((redirect) => {
-    })
   }
 }
