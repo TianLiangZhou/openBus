@@ -9,6 +9,7 @@
 namespace App\Plugin;
 
 
+use Psr\Container\ContainerInterface;
 use Shrimp\Event\ResponseEvent;
 
 class EventSubscribePlugin
@@ -26,9 +27,19 @@ class EventSubscribePlugin
 换乘查询如: 起点_终点, 起点_终点_城市, 如(文一路_西湖文化广场)\n
 分隔符可以为: -, _, ?, |, $, #, @, &, %, ~。如(37|广州)
 EOF;
-    public function __construct($config)
+    /**
+     * @var ContainerInterface
+     */
+    private ContainerInterface $container;
+
+    /**
+     * EventSubscribePlugin constructor.
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
     {
-        $this->config = $config;
+        $this->container = $container;
+        $this->config = $container->get('config');
     }
 
     public function __invoke(ResponseEvent $response)

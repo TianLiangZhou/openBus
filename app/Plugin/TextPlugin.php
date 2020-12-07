@@ -12,6 +12,7 @@ namespace App\Plugin;
 use App\Exception\LineException;
 use App\Lib\Baidu;
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Container\ContainerInterface;
 use Shrimp\Event\ResponseEvent;
 
 class TextPlugin
@@ -30,21 +31,32 @@ class TextPlugin
 无法识别此消息(查询须知)\n
 公交线路如: 37, 37路, 1号线, 37_杭州, 37_广州, 地铁(如: 1号线，4号线，6号线_广州)\n
 换乘查询如: 起点_终点, 起点_终点_城市, 如(文一路_西湖文化广场)\n
-分隔符可以为: -, _, ?, |, $, #, @, &, %, ~。如(37|广州)
+分隔符可以为: -, _, ?, |, $, #, @, &, %, ~。如(37|广州)\n
+使用<a href="https://openbus.loocode.com/index.html">网页版</a>
 EOF;
 
     private string $defaultCity = '杭州市';
 
+    /**
+     * @var ContainerInterface
+     */
+    private ContainerInterface $container;
 
-    public function __construct(array $config)
+
+    /**
+     * TextPlugin constructor.
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
     {
-        $this->config = $config;
+        $this->container = $container;
+        $this->config = $container->get('config');
     }
     /**
      * @param $message
      * @return array
      */
-    private function splitContent($message)
+    private function splitContent($message): array
     {
         foreach ($this->defaultSplit as $value) {
             if (strpos($message, $value) !== false) {

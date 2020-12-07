@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  gateway: 'http://192.168.0.103:8000',
+  gateway: 'http://10.200.1.5:8000',
   name: "公交通",
 };
 

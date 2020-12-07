@@ -8,6 +8,7 @@
 
 return [
     'env' => env('ENV'),
+    'domain' => env('DOMAIN'),
     'debug' => env('DEBUG'),
     'verify_mode' => env('VERIFY_MODE', false),
     'weixin' => [

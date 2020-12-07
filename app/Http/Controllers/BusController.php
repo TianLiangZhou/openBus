@@ -42,8 +42,8 @@ class BusController extends BaseController
         $messageResponse = 'success';
         if ($request->getMethod() === 'POST') {
             $dispatcher = new ShrimpWechat($this->config['weixin']['appid'], $this->config['weixin']['secret']);
-            $dispatcher->bind(new TextPlugin($this->config));
-            $dispatcher->bind(new EventSubscribePlugin($this->config), Event::EVENT_SUBSCRIBE);
+            $dispatcher->bind(new TextPlugin($this->container));
+            $dispatcher->bind(new EventSubscribePlugin($this->container), Event::EVENT_SUBSCRIBE);
             $messageResponse = $dispatcher->send();
         }
         $response->getBody()->write($messageResponse);
