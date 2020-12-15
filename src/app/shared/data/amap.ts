@@ -384,3 +384,15 @@ export interface PoiSearchResponse {
   message?: string;
   total?: string;
 }
+
+export interface PoiRealBus {
+  getPoi(argument: {[key: string]:any});
+  getStationLine(stationId: string);
+  getLineStation(line: string, station:  string);
+  getLineDetail(lineId: string);
+  getLineDetailExtent(lineId: string);
+  getNearLine(lat: string, lon: string);
+  getIpLocation(ip?: string);
+  getAddressLocation(address: string);
+  getPOILite(words: string, category: string);
+}

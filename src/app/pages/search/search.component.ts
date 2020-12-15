@@ -4,6 +4,7 @@ import {PoiSearchResponse, TipList} from "../../shared/data/amap";
 import {Observable, of, Subject} from "rxjs";
 import {AmapService} from "../../shared/services/amap.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {ProxyService} from "../../shared/services/proxy.service";
 
 @Component({
   selector: 'app-search',
@@ -19,7 +20,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
   @ViewChild('searchContent', {static: true}) searchContent: ElementRef;
   loading = true;
 
-  constructor(private amapService: AmapService,
+  constructor(private amapService: ProxyService,
               private router: Router,
               private route: ActivatedRoute) {
   }
@@ -35,7 +36,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
           return of<PoiSearchResponse>({tip_list: []});
         }
         this.loading = true;
-        return this.amapService.getPoiSearch(term)
+        return this.amapService.getPOILite(term)
       }),
       map<PoiSearchResponse, TipList[]>(res => {
         console.log(res)

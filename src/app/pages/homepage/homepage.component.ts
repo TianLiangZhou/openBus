@@ -238,7 +238,7 @@ export class HomepageComponent implements OnInit {
           }
         });
 
-        this.amapService.getRealtimeLine(lineIdArray.join(','), stationIdArray.join(',')).subscribe((realtimeResponse) => {
+        this.amapService.getLineStation(lineIdArray.join(','), stationIdArray.join(',')).subscribe((realtimeResponse) => {
           if (!realtimeResponse.hasOwnProperty("code")) {
             this.stations = stations;
             return ;

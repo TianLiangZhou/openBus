@@ -235,14 +235,14 @@
   }
   .location-station {
     display: flex;
+    align-items: center;
   }
   .location .location-header {
     padding: 20px 0;
     border-bottom: 1px #eeeeee solid;
-  }
-  .location-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
   }
 
   .location-header .location-station-name {
@@ -455,6 +455,7 @@
           <span class="location-station-name-option">(站台{{ station.direction }})</span>
         </div>
         <div class="location-station-right">
+          <img src="assets/images/amap/walking_3x.png" alt="walking" width="14" height="14" />
           {{ station.distance }}米
         </div>
       </div>
@@ -498,10 +499,11 @@
           <span class="location-station-name-option">(站台{{ station.direction }})</span>
         </div>
         <div class="location-station-right">
+          <img src="assets/images/amap/walking_3x.png" alt="walking" width="14" height="14" />
           {{ station.distance }}米
         </div>
       </div>
-      <div class="location-body-lines">
+      <div class="location-body">
         <div class="location-body-line-names">
           {{ station.lines_name }}
         </div>
