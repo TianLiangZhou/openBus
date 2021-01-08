@@ -56,7 +56,7 @@ class LocationPlugin
             return ;
         }
         $message = "";
-
+        $incr = 1;
         $appId = $this->config['miniapp']['appid'];
         foreach ($body->poi_list as $key => $item) {
             $message .= "🚉." . str_replace("(公交站)", "", $item->name)  ." 距离(". (int) $item->distance . ")米\n\n";
@@ -73,6 +73,9 @@ class LocationPlugin
             $stationIdArray = explode(";", explode("|", $item->stations->businfo_stationids)[$index]);
             $lines = explode(";", explode("|", $item->stations->businfo_line_keys)[$index]);
             foreach ($lines as $i => $line) {
+                if ($incr > 7) {
+                    break;
+                }
                 $message .= $this->formatLineStrig(
                     $appId,
                     $lineIdArray[$i],
@@ -81,9 +84,12 @@ class LocationPlugin
                     $line,
                     $stationIdArray[$i]
                 );
+                $incr++;
             }
             $message .= "\n";
         }
+        $message .= $this->formatOpenMiniapp($appId);
+
         $responseEvent->setResponse($message);
     }
 
@@ -99,9 +105,22 @@ class LocationPlugin
     private function formatLineStrig($appId, $lineId, $lat, $lng, $name, $stationId)
     {
         $str = <<<EOF
-🚌.<a data-miniprogram-appid="%s" data-miniprogram-path="pages/line/line?lineid=%s&lat=%s&lng=%s&stationid=%s" href="http://www.qq.com">%s</a>
+🚌.<a data-miniprogram-appid="%s" data-miniprogram-path="pages/line/line?lineid=%s&lat=%s&lng=%s&stationid=%s" href="/">%s</a>
 
 EOF;
         return sprintf($str, $appId, $lineId, $lat, $lng, $stationId, $name);
+    }
+
+    /**
+     * @param $appId
+     * @return string
+     */
+    private function formatOpenMiniapp($appId)
+    {
+        $str = <<<EOF
+🚌.<a data-miniprogram-appid="%s" data-miniprogram-path="pages/index/index" href="/">%s</a>
+
+EOF;
+        return sprintf($str, $appId, "打开小程序查看更多");
     }
 }
