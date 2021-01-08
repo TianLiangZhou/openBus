@@ -42,7 +42,7 @@ class LocationPlugin
           'latitude' => $lat,
           'longitude' => $lng,
           'pagenum' => 1 ,
-          'pagesize' => 4,
+          'pagesize' => 3,
           'query_type' => "RQBXY",
           'range' => 1000,
           'scenario' => 2,
@@ -59,32 +59,34 @@ class LocationPlugin
         $incr = 1;
         $appId = $this->config['miniapp']['appid'];
         foreach ($body->poi_list as $key => $item) {
-            if ($incr > 7) {
-                break;
-            }
-            $message .= "🚉." . str_replace("(公交站)", "", $item->name)  ." 距离(". (int) $item->distance . ")米\n\n";
-            $splitId = explode("|", $item->stations->businfo_lineids);
-            $lineIdArray = [];
-            $index = 0;
-            foreach ($splitId as $k => $idStr) {
-                $l = explode(";", $idStr);
-                if (count($l) > count($lineIdArray)) {
-                    $lineIdArray = $l;
-                    $index = $k;
+            $message .= "🚉." . str_replace("(公交站)", "", $item->name)  ." 距离". (int) $item->distance . "米\n";
+            if ($incr < 7) {
+                $splitId = explode("|", $item->stations->businfo_lineids);
+                $lineIdArray = [];
+                $index = 0;
+                foreach ($splitId as $k => $idStr) {
+                    $l = explode(";", $idStr);
+                    if (count($l) > count($lineIdArray)) {
+                        $lineIdArray = $l;
+                        $index = $k;
+                    }
                 }
-            }
-            $stationIdArray = explode(";", explode("|", $item->stations->businfo_stationids)[$index]);
-            $lines = explode(";", explode("|", $item->stations->businfo_line_keys)[$index]);
-            foreach ($lines as $i => $line) {
-                $message .= $this->formatLineStrig(
-                    $appId,
-                    $lineIdArray[$i],
-                    $lat,
-                    $lng,
-                    $line,
-                    $stationIdArray[$i]
-                );
-                $incr++;
+                $stationIdArray = explode(";", explode("|", $item->stations->businfo_stationids)[$index]);
+                $lines = explode(";", explode("|", $item->stations->businfo_line_keys)[$index]);
+                foreach ($lines as $i => $line) {
+                    if ($incr > 7) {
+                        break;
+                    }
+                    $message .= $this->formatLineStrig(
+                        $appId,
+                        $lineIdArray[$i],
+                        $lat,
+                        $lng,
+                        $line,
+                        $stationIdArray[$i]
+                    );
+                    $incr++;
+                }
             }
             $message .= "\n";
         }
