@@ -78,7 +78,7 @@ EOF;
             $miniapp = sprintf(
                 '<a data-miniprogram-appid="%s" data-miniprogram-path="pages/index/index" href="http://www.qq.com">%s小程序</a>',
                 $this->config['miniapp']['appid'],
-                $this->config['name'] . "小程序",
+                $this->config['name'],
             );
             $response->setResponse($miniapp);
             return ;
