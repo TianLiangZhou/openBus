@@ -14,6 +14,7 @@ use App\Lib\Baidu;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Container\ContainerInterface;
 use Shrimp\Event\ResponseEvent;
+use Shrimp\Response\ImageResponse;
 
 class TextPlugin
 {
@@ -81,7 +82,8 @@ EOF;
         }
         $baiDu = new Baidu($this->config['baidu']['secret']);
         $result = null;
-        $responseMessage = $this->defaultMessage;
+        // $responseMessage = $this->defaultMessage;
+        $responseMessage = null;
         try {
             if ($line) {
                 $result = $baiDu->getBusLine($content[0], isset($content[1]) ? $content[1] : $this->defaultCity);
@@ -93,30 +95,38 @@ EOF;
         } catch (GuzzleException $e) {
             $responseMessage = "查询超时，请稍后再试";
         }
+        if ($responseMessage) {
+            $response->setResponse($responseMessage);
+            return ;
+        }
+        if (empty($result)) {
+            $response->setResponse(
+                new ImageResponse($response->getMessageSource(), "sU4rBCc11U1kwOiaC0YuYLG9DpnmQTUVAcCmeJdv_no")
+            );
+            return ;
+        }
         $message = null;
-        if (!empty($result)) {
-            if ($line) {
-                foreach ($result as $key => $value) {
-                    if ($key > 1) break;
-                    $message .= '线路: ' . $value['name'] . "\n";
-                    $message .= '时间: ' . $value['time'] . "\n";
-                    $message .= '票价: ' . ($value['price'] / 100) . "元\n";
-                    $message .= '站点: ' . implode(' -> ', $value['station']) . "\n\n";
+        if ($line) {
+            foreach ($result as $key => $value) {
+                if ($key > 1) break;
+                $message .= '线路: ' . $value['name'] . "\n";
+                $message .= '时间: ' . $value['time'] . "\n";
+                $message .= '票价: ' . ($value['price'] / 100) . "元\n";
+                $message .= '站点: ' . implode(' -> ', $value['station']) . "\n\n";
+            }
+        } else {
+            foreach ($result as $value) {
+                if (is_string($value)) {
+                    $message .= ',' . $value . ',';
                 }
-            } else {
-                foreach ($result as $value) {
-                    if (is_string($value)) {
-                        $message .= ',' . $value . ',';
-                    }
-                    if (is_array($value)) {
-                        $message .= '[' . $value['start_name'] . '] -> ' .
-                            '乘坐' . $value['name'] .
-                            ' -> [' . $value['end_name'] . ']';
-                    }
+                if (is_array($value)) {
+                    $message .= '[' . $value['start_name'] . '] -> ' .
+                        '乘坐' . $value['name'] .
+                        ' -> [' . $value['end_name'] . ']';
                 }
             }
-            $responseMessage = trim($message, ',');
         }
+        $responseMessage = trim($message, ',');
         $response->setResponse($responseMessage);
     }
 }

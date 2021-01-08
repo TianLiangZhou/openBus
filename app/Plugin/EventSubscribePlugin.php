@@ -11,6 +11,7 @@ namespace App\Plugin;
 
 use Psr\Container\ContainerInterface;
 use Shrimp\Event\ResponseEvent;
+use Shrimp\Response\ImageResponse;
 
 class EventSubscribePlugin
 {
@@ -45,6 +46,9 @@ EOF;
     public function __invoke(ResponseEvent $response)
     {
         // TODO: Implement __invoke() method.
-        $response->setResponse($this->defaultSubscribeMessage);
+        // $response->setResponse($this->defaultSubscribeMessage);
+        $response->setResponse(
+            new ImageResponse($response->getMessageSource(), "sU4rBCc11U1kwOiaC0YuYLG9DpnmQTUVAcCmeJdv_no")
+        );
     }
 }
