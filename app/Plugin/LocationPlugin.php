@@ -14,6 +14,10 @@ class LocationPlugin
      * @var ContainerInterface
      */
     private ContainerInterface $container;
+    /**
+     * @var mixed|config
+     */
+    private $config;
 
     /**
      * LocationPlugin constructor.
@@ -22,6 +26,7 @@ class LocationPlugin
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        $this->config = $container->get('config');
     }
 
     /**
@@ -51,14 +56,52 @@ class LocationPlugin
             return ;
         }
         $message = "";
+
+        $appId = $this->config['miniapp']['appid'];
         foreach ($body->poi_list as $key => $item) {
-            $message .= "🚉." . $item->name  ." 距离(". (int) $item->distance . ")米\n";
-            $lines = explode(";", $item->stations->businfo_line_names);
-            foreach ($lines as $line) {
-                $message .= "🚌." . $line."\n";
+            $message .= "🚉." . str_replace("(公交站)", "", $item->name)  ." 距离(". (int) $item->distance . ")米\n\n";
+            $splitId = explode("|", $item->stations->businfo_lineids);
+            $lineIdArray = [];
+            $index = 0;
+            foreach ($splitId as $k => $idStr) {
+                $l = explode(";", $idStr);
+                if (count($l) > count($lineIdArray)) {
+                    $lineIdArray = $l;
+                    $index = $k;
+                }
+            }
+            $stationIdArray = explode(";", explode("|", $item->stations->businfo_stationids)[$index]);
+            $lines = explode(";", explode("|", $item->stations->businfo_line_keys)[$index]);
+            foreach ($lines as $i => $line) {
+                $message .= $this->formatLineStrig(
+                    $appId,
+                    $lineIdArray[$i],
+                    $lat,
+                    $lng,
+                    $line,
+                    $stationIdArray[$i]
+                );
             }
             $message .= "\n";
         }
         $responseEvent->setResponse($message);
+    }
+
+    /**
+     * @param $appId
+     * @param $lineId
+     * @param $lat
+     * @param $lng
+     * @param $name
+     * @param $stationId
+     * @return string
+     */
+    private function formatLineStrig($appId, $lineId, $lat, $lng, $name, $stationId)
+    {
+        $str = <<<EOF
+🚌.<a data-miniprogram-appid="%s" data-miniprogram-path="pages/line/line?lineid=%s&lat=%s&lng=%s&stationid=%s" href="http://www.qq.com">%s</a>
+
+EOF;
+        return sprintf($str, $appId, $lineId, $lat, $lng, $stationId, $name);
     }
 }
