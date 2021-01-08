@@ -59,6 +59,9 @@ class LocationPlugin
         $incr = 1;
         $appId = $this->config['miniapp']['appid'];
         foreach ($body->poi_list as $key => $item) {
+            if ($incr > 7) {
+                break;
+            }
             $message .= "🚉." . str_replace("(公交站)", "", $item->name)  ." 距离(". (int) $item->distance . ")米\n\n";
             $splitId = explode("|", $item->stations->businfo_lineids);
             $lineIdArray = [];
@@ -73,9 +76,6 @@ class LocationPlugin
             $stationIdArray = explode(";", explode("|", $item->stations->businfo_stationids)[$index]);
             $lines = explode(";", explode("|", $item->stations->businfo_line_keys)[$index]);
             foreach ($lines as $i => $line) {
-                if ($incr > 7) {
-                    break;
-                }
                 $message .= $this->formatLineStrig(
                     $appId,
                     $lineIdArray[$i],
