@@ -7,6 +7,7 @@
  */
 
 return [
+    'name' => env('APP_NAME'),
     'env' => env('ENV'),
     'domain' => env('DOMAIN'),
     'debug' => env('DEBUG'),
@@ -15,6 +16,9 @@ return [
         'appid' => env('WECHAT_APPID'),
         'secret'=> env('WECHAT_SERECT'),
         'token' => env('WECHAT_TOKEN'),
+    ],
+    'miniapp' => [
+        'appid' => env('MINIAPP_APPID')
     ],
     'baidu' => [
         'appid' => env('BAIDU_APPID'),

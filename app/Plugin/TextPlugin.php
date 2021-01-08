@@ -73,7 +73,17 @@ EOF;
     public function __invoke(ResponseEvent $response)
     {
         // TODO: Implement __invoke() method.
-        $content = $this->splitContent(trim((string) $response->getAttribute("Content")));
+        $receiveData = trim((string) $response->getAttribute("Content"));
+        if ($receiveData == "小程序") {
+            $miniapp = sprintf(
+                '<a data-miniprogram-appid="%s" data-miniprogram-path="pages/index/index" href="http://www.qq.com">%s小程序</a>',
+                $this->config['miniapp']['appid'],
+                $this->config['name'] . "小程序",
+            );
+            $response->setResponse($miniapp);
+            return ;
+        }
+        $content = $this->splitContent($receiveData);
         $line = false;
         if (is_numeric($content[0])) {
             $line = true;
