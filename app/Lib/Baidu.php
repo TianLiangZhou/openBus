@@ -111,7 +111,7 @@ class Baidu
         }
         $city = json_decode($response->getBody()->getContents(), true);
         if (!isset($city['current_city']['code'])) {
-            throw new LineException("获取城市信息失败，请输入正确的城市");
+            return [];
         }
         $code = $city['current_city']['code'];
         $response = $this->client->request(
@@ -124,7 +124,7 @@ class Baidu
         }
         $line = json_decode($response->getBody()->getContents(), true);
         if (empty($line['content'][0]) || empty($line['content'][0]['uid'])) {
-            throw new LineException("公交线路信息查询失败，可能该城市无此线路");
+            return [];
         }
         $lines = $line['content'];
         $promises = [];

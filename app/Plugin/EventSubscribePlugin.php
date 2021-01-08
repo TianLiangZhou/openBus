@@ -48,7 +48,7 @@ EOF;
         // TODO: Implement __invoke() method.
         // $response->setResponse($this->defaultSubscribeMessage);
         $response->setResponse(
-            new ImageResponse($response->getMessageSource(), "sU4rBCc11U1kwOiaC0YuYLG9DpnmQTUVAcCmeJdv_no")
+            "https://mp.weixin.qq.com/s?__biz=MjM5OTgzNjg2Mg==&mid=100000027&idx=1&sn=18821082d86e6714bd335fa0f491bd48&chksm=27342cca1043a5dc224224468258dc2f0d64a4de4725f9003c775ffdae80a645c5c66d80c36c#rd"
         );
     }
 }

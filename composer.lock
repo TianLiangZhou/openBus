@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f79be6fc6097232d6091fe109fae6615",
+    "content-hash": "cf338445ce822771e5fafc5769f6a279",
     "packages": [
         {
             "name": "graham-campbell/result-type",
@@ -466,16 +466,16 @@
         },
         {
             "name": "meshell/shrimp-wechat-sdk",
-            "version": "v2.0.2",
+            "version": "v2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TianLiangZhou/shrimp-wechat-sdk.git",
-                "reference": "f8165446e72fb1f70f95e6abef4d7ff46d68692a"
+                "reference": "c0b395f4044af4566fcc4c34b9bc88c6eabcb833"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TianLiangZhou/shrimp-wechat-sdk/zipball/f8165446e72fb1f70f95e6abef4d7ff46d68692a",
-                "reference": "f8165446e72fb1f70f95e6abef4d7ff46d68692a",
+                "url": "https://api.github.com/repos/TianLiangZhou/shrimp-wechat-sdk/zipball/c0b395f4044af4566fcc4c34b9bc88c6eabcb833",
+                "reference": "c0b395f4044af4566fcc4c34b9bc88c6eabcb833",
                 "shasum": ""
             },
             "require": {
@@ -523,9 +523,9 @@
             ],
             "support": {
                 "issues": "https://github.com/TianLiangZhou/shrimp-wechat-sdk/issues",
-                "source": "https://github.com/TianLiangZhou/shrimp-wechat-sdk/tree/v2.0.2"
+                "source": "https://github.com/TianLiangZhou/shrimp-wechat-sdk/tree/v2.0.3"
             },
-            "time": "2021-01-08T07:39:57+00:00"
+            "time": "2021-01-08T08:26:14+00:00"
         },
         {
             "name": "monolog/monolog",
