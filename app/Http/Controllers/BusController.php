@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Plugin\EventSubscribePlugin;
+use App\Plugin\LocationPlugin;
 use App\Plugin\TextPlugin;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -44,6 +45,7 @@ class BusController extends BaseController
             $dispatcher = new ShrimpWechat($this->config['weixin']['appid'], $this->config['weixin']['secret']);
             $dispatcher->bind(new TextPlugin($this->container));
             $dispatcher->bind(new EventSubscribePlugin($this->container), Event::EVENT_SUBSCRIBE);
+            $dispatcher->bind(new LocationPlugin($this->container), Event::LOCATION);
             $messageResponse = $dispatcher->send();
         }
         $response->getBody()->write($messageResponse);
