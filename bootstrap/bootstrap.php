@@ -19,47 +19,62 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Factory\AppFactory;
 
 
-$dotenv = Dotenv\Dotenv::create(Env::getRepository(), __DIR__ . '/../');
-$dotenv->safeLoad();
+$dir = __DIR__ . '/../storage/caches';
 
-$config = require __DIR__ . '/../config/app.php';
+
+$containerClass = 'CompiledContainer';
 
 $builder= new ContainerBuilder();
-$builder->addDefinitions([
-    'config' => $config,
-    'logger' => function (ContainerInterface $container) {
-        $logger = new Logger($_ENV['APP_NAME']);
-        $logger->pushHandler(new StreamHandler(
-            __DIR__ . '/../storage/logs/' . PHP_SAPI . '-' . date('Ymd') . '.log',
-            Monolog\Logger::DEBUG,
-        ));
-        return $logger;
-    },
-    'amap.controller' => function (ContainerInterface $container) {
-        return new AMapController($container);
-    },
-    'bus.controller' => function (ContainerInterface $container) {
-        return new BusController($container);
-    }
-]);
 $builder->enableDefinitionCache();
-$builder->enableCompilation(__DIR__ . '/../storage/caches');
+$builder->enableCompilation($dir, $containerClass);
 $builder->useAutowiring(false);
 $builder->useAnnotations(false);
-
 try {
+    if (!file_exists($dir . '/' . $containerClass . '.php')) {
+        $dotenv = Dotenv\Dotenv::create(Env::getRepository(), __DIR__ . '/../');
+        $dotenv->safeLoad();
+        $builder->addDefinitions([
+            'config' => require __DIR__ . '/../config/app.php',
+            'logger' => function (ContainerInterface $container) {
+                $name = $container->get('config')['name'];
+                $logger = new Logger($name);
+                $logger->pushHandler(new StreamHandler(
+                    __DIR__ . '/../storage/logs/' . PHP_SAPI . '-' . date('Ymd') . '.log',
+                    Monolog\Logger::DEBUG,
+                ));
+                return $logger;
+            },
+            'amap.controller' => function (ContainerInterface $container) {
+                return new AMapController($container);
+            },
+            'bus.controller' => function (ContainerInterface $container) {
+                return new BusController($container);
+            },
+            'cache' => function (ContainerInterface $container) {
+                $config = $container->get('config');
+                if (!class_exists("\Redis")) {
+                    throw new RuntimeException("'redis' extension no load");
+                }
+                $redis = new \Redis();
+                $redis->connect(
+                    $config['cache']['redis']['host'],
+                    $config['cache']['redis']['port'],
+                    $config['cache']['redis']['timeout']
+                );
+                return $redis;
+            }
+        ]);
+    }
     $container = $builder->build();
-} catch (Exception $e) {
+} catch (\Exception $e) {
     echo $e->getMessage();
     exit(254);
 }
-
 AppFactory::setResponseFactory(new ResponseFactory());
 AppFactory::setStreamFactory(new StreamFactory());
 AppFactory::setContainer($container);
-
-
 $app = AppFactory::create();
+$config = $container->get('config');
 if ($config['debug']) {
     error_reporting(E_ALL);
     ini_set('display_errors', "1");

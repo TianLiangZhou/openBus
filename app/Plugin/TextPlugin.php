@@ -68,9 +68,9 @@ class TextPlugin
         $receiveData = trim((string) $response->getAttribute("Content"));
         if ($receiveData == "小程序") {
             $miniapp = sprintf(
-                '<a data-miniprogram-appid="%s" data-miniprogram-path="pages/index/index" href="http://www.qq.com">%s小程序</a>',
+                '<a data-miniprogram-appid="%s" data-miniprogram-path="pages/index/index" href="/">%s</a>',
                 $this->config['miniapp']['appid'],
-                $this->config['name'],
+                "点击打开小程序",
             );
             $response->setResponse($miniapp);
             return ;
@@ -85,7 +85,6 @@ class TextPlugin
         }
         $baiDu = new Baidu($this->config['baidu']['secret']);
         $result = null;
-        // $responseMessage = $this->defaultMessage;
         $responseMessage = null;
         try {
             if ($line) {

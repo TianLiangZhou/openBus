@@ -15,7 +15,7 @@ class LocationPlugin
      */
     private ContainerInterface $container;
     /**
-     * @var mixed|config
+     * @var mixed
      */
     private $config;
 
@@ -34,8 +34,20 @@ class LocationPlugin
      */
     public function __invoke(ResponseEvent $responseEvent)
     {
+        $appId = $this->config['miniapp']['appid'];
         $lng = (string) $responseEvent->getAttribute("Location_Y");
         $lat = (string) $responseEvent->getAttribute("Location_X");
+        if (empty($lng) || empty($lat)) {
+            return ;
+        }
+        if ($this->container->has('cache')) {
+            /**
+             * @var $redis \Redis
+             */
+            $redis = $this->container->get("cache");
+            $openId = (string) $responseEvent->getAttribute("FromUserName");
+            $redis->set($openId, "$lat,$lng");
+        }
         $aMap = new AMapService($this->container);
         $response = $aMap->poi([
           'category' => 150700,
@@ -53,11 +65,13 @@ class LocationPlugin
         }
         $body = json_decode($response->getBody()->getContents());
         if ($body->code != "1" || (int)$body->total < 1) {
+            $responseEvent->setResponse(
+                "附近没有公交站信息\n\n" . $this->formatOpenMiniapp($appId)
+            );
             return ;
         }
         $message = "";
         $incr = 1;
-        $appId = $this->config['miniapp']['appid'];
         foreach ($body->poi_list as $key => $item) {
             $message .= "🚉." . str_replace("(公交站)", "", $item->name)  ." 距离". (int) $item->distance . "米\n";
             if ($incr < 7) {
@@ -77,7 +91,7 @@ class LocationPlugin
                     if ($incr > 7) {
                         break;
                     }
-                    $message .= $this->formatLineStrig(
+                    $message .= $this->formatLineString(
                         $appId,
                         $lineIdArray[$i],
                         $lat,
@@ -91,7 +105,6 @@ class LocationPlugin
             $message .= "\n";
         }
         $message .= $this->formatOpenMiniapp($appId);
-
         $responseEvent->setResponse($message);
     }
 
@@ -104,7 +117,7 @@ class LocationPlugin
      * @param $stationId
      * @return string
      */
-    private function formatLineStrig($appId, $lineId, $lat, $lng, $name, $stationId)
+    private function formatLineString($appId, $lineId, $lat, $lng, $name, $stationId): string
     {
         $str = <<<EOF
 🚌.<a data-miniprogram-appid="%s" data-miniprogram-path="pages/line/line?lineid=%s&lat=%s&lng=%s&stationid=%s" href="/">%s</a>
@@ -117,11 +130,10 @@ EOF;
      * @param $appId
      * @return string
      */
-    private function formatOpenMiniapp($appId)
+    private function formatOpenMiniapp($appId): string
     {
         $str = <<<EOF
-🚌.<a data-miniprogram-appid="%s" data-miniprogram-path="pages/index/index" href="/">%s</a>
-
+<a data-miniprogram-appid="%s" data-miniprogram-path="pages/index/index" href="/">%s</a>
 EOF;
         return sprintf($str, $appId, "打开小程序查看更多");
     }

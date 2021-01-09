@@ -26,11 +26,10 @@ return [
         'sk' => env('BAIDU_SK'),
     ],
     'cache' => [
-        'driver' => 'file',
-        'memcached' => [
-            'host' => '127.0.0.1', 'port' => 11211, 'weight' => 1
+        'driver' => 'redis',
+        'redis' => [
+            'host' => '127.0.0.1', 'port' => 6379, 'timeout' => 1
         ],
-        'path' => realpath(__DIR__ . '/../storage/cache'),
+        'path' => realpath(__DIR__ . '/../storage/caches'),
     ],
-    'plugins' => include __DIR__  . '/plugins.php'
 ];

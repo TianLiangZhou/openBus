@@ -38,7 +38,6 @@ class EventSubscribePlugin
     public function __invoke(ResponseEvent $response)
     {
         // TODO: Implement __invoke() method.
-        // $response->setResponse($this->defaultSubscribeMessage);
         $articles = [
             "title" => "公众号使用方法",
             "description" => "【回复】2路_上海，获取上海2路公交信息。【回复】八达岭长城_天安门东门_北京，获取长城到北京天安门的线路规化...",
