@@ -154,7 +154,7 @@ class TextPlugin extends Plugin
             if (count($lines) >= 2) {
                 break;
             }
-            if (($lineNumber && strpos($busline['name'], $lineNumber) !== false) || ($lineNumber == 0 && $key < 2)) {
+            if (($lineNumber && mb_strpos($busline['name'], $lineNumber) !== false) || ($lineNumber == 0 && $key < 2)) {
                 $lines[] = $busline;
             }
         }
