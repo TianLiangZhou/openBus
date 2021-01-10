@@ -11,12 +11,13 @@ namespace App\Plugin;
 
 use App\Exception\LineException;
 use App\Lib\Baidu;
+use App\Services\AMapService;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Container\ContainerInterface;
 use Shrimp\Event\ResponseEvent;
 use Shrimp\Response\NewsResponse;
 
-class TextPlugin
+class TextPlugin extends Plugin
 {
     private array $defaultSplit = [
         '-', '_', '?', '|',
@@ -26,15 +27,14 @@ class TextPlugin
         '.', ' ', ','
     ];
 
-    private array $config;
-
     private string $defaultCity = '杭州市';
 
-    /**
-     * @var ContainerInterface
-     */
-    private ContainerInterface $container;
+    private string $defaultCityCode = '330100';
 
+    /**
+     * @var AMapService
+     */
+    private AMapService $amapService;
 
     /**
      * TextPlugin constructor.
@@ -42,9 +42,11 @@ class TextPlugin
      */
     public function __construct(ContainerInterface $container)
     {
-        $this->container = $container;
-        $this->config = $container->get('config');
+        parent::__construct($container);
+
+        $this->amapService = new AMapService();
     }
+
     /**
      * @param $message
      * @return array
@@ -67,12 +69,7 @@ class TextPlugin
         // TODO: Implement __invoke() method.
         $receiveData = trim((string) $response->getAttribute("Content"));
         if ($receiveData == "小程序") {
-            $miniapp = sprintf(
-                '<a data-miniprogram-appid="%s" data-miniprogram-path="pages/index/index" href="/">%s</a>',
-                $this->config['miniapp']['appid'],
-                "点击打开小程序",
-            );
-            $response->setResponse($miniapp);
+            $response->setResponse($this->getOpenMiniappString($this->config['miniapp']['appid']));
             return ;
         }
         $content = $this->splitContent($receiveData);
@@ -80,60 +77,307 @@ class TextPlugin
         if (is_numeric($content[0])) {
             $line = true;
         }
-        if (preg_match('/[a-z]?[0-9]+([路|线|号线]+)?/is', $content[0])) {
+        if ($line == false && preg_match('/[a-z]?[0-9]+([路|线|号线]+)?/is', $content[0])) {
             $line = true;
         }
-        $baiDu = new Baidu($this->config['baidu']['secret']);
-        $result = null;
+        // $baiDu = new Baidu($this->config['baidu']['secret']);
         $responseMessage = null;
         try {
             if ($line) {
-                $result = $baiDu->getBusLine($content[0], isset($content[1]) ? $content[1] : $this->defaultCity);
+                $responseMessage = $this->getLineInfo(
+                    (string)$response->getAttribute("FromUserName"),
+                    $content[0],
+                    isset($content[1]) ? $content[1] : ""
+                );
             } else {
-                $result = $baiDu->getLineInfo($content[0], isset($content[1]) ? $content[1] : $content[0], isset($content[2]) ? $content[2] : $this->defaultCity);
+                $responseMessage = $this->getDirectionTransit(
+                    (string)$response->getAttribute("FromUserName"),
+                    $content[0],
+                    isset($content[1]) ? $content[1] : $content[0],
+                    isset($content[2]) ? $content[2] : ""
+                );
+                // $result = $baiDu->getLineInfo($content[0], isset($content[1]) ? $content[1] : $content[0], isset($content[2]) ? $content[2] : $this->defaultCity);
             }
-        } catch (LineException $e) {
-            $responseMessage = $e->getMessage();
-        } catch (GuzzleException $e) {
-            $responseMessage = "查询超时，请稍后再试";
-        }
-        if ($responseMessage) {
-            $response->setResponse($responseMessage);
-        }
-        if (empty($result)) {
-            $articles = [
-                "title" => "公众号使用方法",
-                "description" => "【回复】2路_上海，获取上海2路公交信息。【回复】八达岭长城_天安门东门_北京，获取长城到北京天安门的线路规化...",
-                "pic_url" => "https://mmbiz.qpic.cn/mmbiz_jpg/c55CzXLykEojvohia8TTyicKkjPKxicWaOdqBUODRnODhpHwEFMSicN3ic3icoTl6ouagFMJJEBPqGjMib0echicgiaiaWVQ/0?wx_fmt=jpeg",
-                "url" => "https://mp.weixin.qq.com/s?__biz=MjM5OTgzNjg2Mg==&mid=100000027&idx=1&sn=18821082d86e6714bd335fa0f491bd48&chksm=27342cca1043a5dc224224468258dc2f0d64a4de4725f9003c775ffdae80a645c5c66d80c36c#rd"
-            ];
+        } catch (\Exception $e) {
             $response->setResponse(
-                new NewsResponse($response->getMessageSource(), $articles)
+                new NewsResponse($response->getMessageSource(), $this->articles)
             );
             return ;
         }
-        $message = null;
-        if ($line) {
-            foreach ($result as $key => $value) {
-                if ($key > 1) break;
-                $message .= '线路: ' . $value['name'] . "\n";
-                $message .= '时间: ' . $value['time'] . "\n";
-                $message .= '票价: ' . ($value['price'] / 100) . "元\n";
-                $message .= '站点: ' . implode(' -> ', $value['station']) . "\n\n";
+        $response->setResponse($responseMessage);
+//        if ($line) {
+//            foreach ($result as $key => $value) {
+//                if ($key > 1) break;
+//                $message .= '线路: ' . $value['name'] . "\n";
+//                $message .= '时间: ' . $value['time'] . "\n";
+//                $message .= '票价: ' . ($value['price'] / 100) . "元\n";
+//                $message .= '站点: ' . implode(' -> ', $value['station']) . "\n\n";
+//            }
+//        } else {
+//            foreach ($result as $value) {
+//                if (is_string($value)) {
+//                    $message .= ',' . $value . ',';
+//                }
+//                if (is_array($value)) {
+//                    $message .= '[' . $value['start_name'] . '] -> ' .
+//                        '乘坐' . $value['name'] .
+//                        ' -> [' . $value['end_name'] . ']';
+//                }
+//            }
+//        }
+//        $responseMessage = trim($message, ',');
+//        $response->setResponse($responseMessage);
+    }
+
+    /**
+     * @param string $openId
+     * @param string $lineName
+     * @param string $region
+     * @return string
+     */
+    private function getLineInfo(string $openId, string $lineName, string $region = ""): string
+    {
+        $parameters = [
+            'keywords' => $lineName,
+            'city' => $this->queryCityCode($region, $openId),
+            'citylimit' => "true",
+            'extensions' => "all",
+            "output" => "json",
+            "offset" => 4,
+        ];
+        $response = $this->amapService->lineNameSearch($parameters);
+        if ($response->getStatusCode() != 200) {
+            return "服务发生错误请稍后再试";
+        }
+        $content = $response->getBody()->getContents();
+        $poiLine = json_decode($content, true);
+        if ($poiLine['status'] != "1") {
+            $this->container->get('logger')->info($content);
+            return "查询出错，未找到符合条件的线路信息";
+        }
+        if (count($poiLine['buslines']) < 1) {
+            return "未找到符合条件的线路信息";
+        }
+        preg_match('/[0-9]+/is', $lineName, $matches);
+        $lineNumber = 0;
+        if (isset($matches[0])) {
+            $lineNumber = (int) $matches[0];
+        }
+        $lines = [];
+        foreach ($poiLine['buslines'] as $key => $busline) {
+            if (count($lines) >= 2) {
+                break;
             }
-        } else {
-            foreach ($result as $value) {
-                if (is_string($value)) {
-                    $message .= ',' . $value . ',';
-                }
-                if (is_array($value)) {
-                    $message .= '[' . $value['start_name'] . '] -> ' .
-                        '乘坐' . $value['name'] .
-                        ' -> [' . $value['end_name'] . ']';
+            if (($lineNumber && strpos($busline['name'], $lineNumber) !== false) || ($lineNumber == 0 && $key < 2)) {
+                $lines[] = $busline;
+            }
+        }
+        if (empty($lines)) {
+            $lines = array_splice($poiLine['buslines'], 0, 2);
+        }
+        $message = "";
+        $appId = $this->config['miniapp']['appid'];
+        foreach ($lines as $line) {
+            $message .= '线路: ' . $this->getOpenMiniappLineString($appId, $line['id'], $line['name']) . "\n";
+            if ($line['start_time']) {
+                $message .= '时间: ' .
+                    substr($line['start_time'], 0, 2) . ':' . substr($line['start_time'], 2) .
+                    '-' .
+                    substr($line['end_time'], 0, 2) . ':' . substr($line['end_time'], 2) .
+                    "\n";
+            }
+            if ($line['total_price']) {
+                $message .= '票价: ' . $line['total_price'] . "元\n";
+            }
+            $stations = array_map(function ($item) {
+                return $item['name'];
+            }, $line['busstops']);
+            $message .= '站点: ' . implode(' -> ', $stations) . "\n\n";
+        }
+        return $message;
+    }
+
+    /**
+     * @param string $openId
+     * @param string $startPoint
+     * @param string $endPoint
+     * @param string $region
+     * @return string
+     * @throws LineException
+     */
+    private function getDirectionTransit(string $openId, string $startPoint, string $endPoint, string $region = ""): string
+    {
+
+        $parameters['keywords'] = $endPoint;
+        $city = $this->queryCityCode($region, $openId);
+        $startResponse = $this->queryKeywords($startPoint, $city);
+        $endResponse =  $this->queryKeywords($endPoint, $city);
+        if (empty($startResponse) || empty($endResponse)) {
+            return "服务发生错误请稍后再试";
+        }
+        $startLocation = $startResponse['pois'][0]['location'];
+        $endLocation = $endResponse['pois'][0]['location'];
+        $transitResponse = $this->amapService->transitIntegrated([
+            'origin' => $startLocation,
+            'destination' => $endLocation,
+            'strategy' => 0,
+            'nightflag' => 0,
+            'city' => $city,
+            'cityd' => '',
+            'output' => 'json',
+        ]);
+        if ($transitResponse->getStatusCode() != 200) {
+            return "服务发生错误请稍后再试";
+        }
+        $r = json_decode($transitResponse->getBody()->getContents(), true);
+        if ($r['status'] != '1') {
+            throw new LineException("请求结果发生错误");
+        }
+        if (empty($r['route']['transits'])) {
+            throw new LineException("不能规化线路");
+        }
+        $route = $r['route']['transits'][0];
+        $message = "";
+        foreach ($route['segments'] as $step => $segment) {
+            if ($segment['walking']) {
+                $count = count($segment['walking']['steps']);
+                $lastStep = $segment['walking']['steps'][$count - 1];
+                $message .= "步行" . $segment['walking']['distance']. '米' .
+                    (is_string($lastStep['assistant_action']) ? $lastStep['assistant_action'] : "") . "\n";
+            }
+            if ($segment['bus'] && $segment['bus']['buslines']) {
+                $busLines = $segment['bus']['buslines'];
+                foreach ($busLines as $lineStep => $line) {
+                    $label = "乘坐";
+                    if ($lineStep > 0) {
+                        $label = '换乘';
+                    }
+                    $message .= "{$label}[" . $line['name'] . "] -> [" . $line['arrival_stop']['name'] . "]下车\n";
                 }
             }
         }
-        $responseMessage = trim($message, ',');
-        $response->setResponse($responseMessage);
+        $message = rtrim($message, "\n") . "到达终点\n\n";
+        if ($route['distance']) {
+            $distance = round(($route['distance'] / 1000), 1) . "公里";
+            $message .= "全程:" . $distance . "\n";
+        }
+        if ($route['duration']) {
+            $message .= "预计耗时:" . $this->formatTime($route['duration']) . "\n";
+        }
+        if ($route['walking_distance']) {
+            $walking = $route['walking_distance'] >= 1000 ?
+                round(($route['walking_distance'] / 1000), 1) . "公里"
+                : $route['walking_distance'] . "米";
+            $message .= "步行:" . $walking . "\n";
+        }
+        if ($route['cost']) {
+            $message .= "车票费用:" . $route['cost'] . "元";
+        }
+        return $message;
+    }
+
+    /**
+     * @param int $duration
+     * @return string
+     */
+    private function formatTime(int $duration)
+    {
+        $hour = $min = 0;
+        if ($duration >= 3600) {
+            $hour = floor($duration / 3600);
+            $min = floor($duration % 3600 / 60);
+        } else {
+            $min = floor($duration / 60);
+        }
+        return ($hour ? $hour . "小时" : "") . ($min > 0 ? $min . "分钟" : "");
+    }
+
+    /**
+     * @param string $keywords
+     * @param string $city
+     * @return array
+     */
+    private function queryKeywords(string $keywords, string $city)
+    {
+        $parameters = [
+            'keywords' => $keywords,
+            'city' => $city,
+            'citylimit' => "true",
+            'children' => 0,
+            'offset' => 4,
+            'page' => 1,
+            'extensions' => 'all',
+            'antiCrab' => 'true',
+            'type_' => 'KEYWORD',
+        ];
+        $response = $this->amapService->keywordSearch($parameters);
+        if ($response->getStatusCode() != 200) {
+            return [];
+        }
+        $r = json_decode($response->getBody()->getContents(), true);
+        if ($r['status'] != '1' || (int) $r['count'] < 1) {
+            return [];
+        }
+        return $r;
+    }
+
+
+    /**
+     * @param string|null $region
+     * @param string $openId
+     * @return string
+     */
+    private function queryCityCode(?string $region, string $openId): string
+    {
+        /**
+         * @var $redis \Redis
+         */
+        $redis = $this->container->get('cache');
+        if (empty($region)) {
+            if (($cityCode = $redis->hGet($openId, 'adcode'))) {
+                return $cityCode;
+            }
+            return $this->defaultCityCode;
+        }
+        $cities = $redis->get('cities');
+        if (empty($cities)) {
+            return $this->defaultCityCode;
+        }
+        $cities = json_decode($cities, true);
+        foreach ($cities as $item) {
+            if (mb_strpos($item['name'], $region) !== false) {
+                return $item['adcode'];
+            }
+        }
+        return $this->defaultCityCode;
+    }
+
+    /**
+     * @param string $appId
+     * @return string
+     */
+    private function getOpenMiniappString(string $appId): string
+    {
+        return sprintf(
+            '<a data-miniprogram-appid="%s" data-miniprogram-path="pages/index/index" href="/">%s</a>',
+            $appId,
+            "点击打开小程序",
+        );
+    }
+
+    /**
+     * @param string $appId
+     * @param string $lineId
+     * @param string $lineName
+     * @return string
+     */
+    private function getOpenMiniappLineString(string $appId, string $lineId, string $lineName): string
+    {
+        return sprintf(
+            '<a data-miniprogram-appid="%s" data-miniprogram-path="pages/line/line?lineid=%s" href="/">%s</a>',
+            $appId,
+            $lineId,
+            $lineName
+        );
     }
 }

@@ -5,30 +5,10 @@ namespace App\Plugin;
 
 
 use App\Services\AMapService;
-use Psr\Container\ContainerInterface;
 use Shrimp\Event\ResponseEvent;
 
-class LocationPlugin
+class LocationPlugin extends Plugin
 {
-    /**
-     * @var ContainerInterface
-     */
-    private ContainerInterface $container;
-    /**
-     * @var mixed
-     */
-    private $config;
-
-    /**
-     * LocationPlugin constructor.
-     * @param ContainerInterface $container
-     */
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-        $this->config = $container->get('config');
-    }
-
     /**
      * @param ResponseEvent $responseEvent
      */
@@ -40,15 +20,26 @@ class LocationPlugin
         if (empty($lng) || empty($lat)) {
             return ;
         }
+        $aMap = new AMapService($this->container);
         if ($this->container->has('cache')) {
             /**
              * @var $redis \Redis
              */
             $redis = $this->container->get("cache");
             $openId = (string) $responseEvent->getAttribute("FromUserName");
-            $redis->set($openId, "$lat,$lng");
+            $mData = [
+                "point" => "$lng,$lat",
+            ];
+            $regeoResponse = $aMap->geocodeRegeo("$lng,$lat");
+            if ($regeoResponse->getStatusCode() == 200) {
+                $regeo = json_decode($regeoResponse->getBody()->getContents());
+                if ($regeo->status == "1") {
+                    $mData['adcode'] = $regeo->regeocode->addressComponent->adcode;
+                    $mData['citycode'] = $regeo->regeocode->addressComponent->citycode;
+                }
+            }
+            $redis->hMSet($openId, $mData);
         }
-        $aMap = new AMapService($this->container);
         $response = $aMap->poi([
           'category' => 150700,
           'latitude' => $lat,

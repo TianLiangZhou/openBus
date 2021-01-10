@@ -17,7 +17,11 @@ class AMapService
 
     private const GATEWAY = "https://aisle.amap.com";
 
+    private const REST_GATEWAY = "https://restapi.amap.com";
+
     private const SECRET = "59f783b90e9cb4aaa352b66da1a8d358";
+
+    private const REST_SECRET = "2c5d4e46c31b259672ace4fb21f02c41";
 
     private array $commonParams = [
         "appFrom" => "alipay",
@@ -38,12 +42,14 @@ class AMapService
 
     /**
      * AMapService constructor.
-     * @param ContainerInterface $container
+     * @param ContainerInterface|null $container
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container = null)
     {
         $this->client = new Client();
-        $this->container = $container;
+        if (isset($container)) {
+            $this->container = $container;
+        }
     }
 
     /**
@@ -167,11 +173,68 @@ class AMapService
     }
 
     /**
+     * @param string $point
      * @return ResponseInterface
      */
-    public function city()
+    public function geocodeRegeo(string $point)
     {
-        return $this->getResponse('GET', 'https://www.amap.com/service/cityList?version=202011295');
+        $url = self::REST_GATEWAY . sprintf(
+                '/v3/geocode/regeo?key=%s&location=%s&extensions=base&poitype=',
+                self::REST_SECRET,
+                $point
+            );
+        return $this->getResponse('GET', $url);
+    }
+
+    /**
+     * @param array $parameters
+     * @return ResponseInterface
+     */
+    public function keywordSearch(array $parameters)
+    {
+        $url = self::REST_GATEWAY . sprintf(
+                    '/v3/place/text?key=%s&%s',
+                self::REST_SECRET,
+                http_build_query($parameters)
+            );
+        return $this->getResponse("GET", $url);
+    }
+
+    /**
+     * @param array $parameters
+     * @return ResponseInterface
+     */
+    public function lineNameSearch(array $parameters)
+    {
+        $url = self::REST_GATEWAY . sprintf(
+            '/v3/bus/linename?key=%s&%s',
+                self::REST_SECRET,
+                http_build_query($parameters)
+            );
+        return $this->getResponse("GET", $url);
+    }
+
+    /**
+     * @param array $parameters
+     * @return ResponseInterface
+     */
+    public function transitIntegrated(array $parameters)
+    {
+        $url = self::REST_GATEWAY . sprintf(
+                '/v3/direction/transit/integrated?key=%s&%s',
+                self::REST_SECRET,
+                http_build_query($parameters)
+            );
+        return $this->getResponse("GET", $url);
+    }
+
+    /**
+     * @param string $version
+     * @return ResponseInterface
+     */
+    public function city(string $version = '202011295')
+    {
+        return $this->getResponse('GET', 'https://www.amap.com/service/cityList?version=' . $version);
     }
 
     /**
@@ -195,7 +258,7 @@ class AMapService
         try {
             return $this->client->request($method, $url, $options);
         } catch (GuzzleException $e) {
-            $this->container->get('logger')->error($e->getTraceAsString());
+            $this->container && $this->container->get('logger')->error($e->getTraceAsString());
         }
         return new JsonResponse([]);
     }
