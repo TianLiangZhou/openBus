@@ -80,6 +80,12 @@ class TextPlugin extends Plugin
         if ($line == false && preg_match('/[a-z]?[0-9]+([路|线|号线]+)?/is', $content[0])) {
             $line = true;
         }
+        if ($line == false && count($content) < 2) {
+            $response->setResponse(
+                new NewsResponse($response->getMessageSource(), $this->articles)
+            );
+            return ;
+        }
         // $baiDu = new Baidu($this->config['baidu']['secret']);
         $responseMessage = null;
         try {
