@@ -10,9 +10,7 @@ namespace App\Plugin;
 
 
 use App\Exception\LineException;
-use App\Lib\Baidu;
 use App\Services\AMapService;
-use GuzzleHttp\Exception\GuzzleException;
 use Psr\Container\ContainerInterface;
 use Shrimp\Event\ResponseEvent;
 use Shrimp\Response\NewsResponse;
@@ -26,8 +24,6 @@ class TextPlugin extends Plugin
         '^', '*', '=', '+',
         '.', ' ', ','
     ];
-
-    private string $defaultCity = '杭州市';
 
     private string $defaultCityCode = '330100';
 
@@ -72,6 +68,12 @@ class TextPlugin extends Plugin
             $response->setResponse($this->getOpenMiniappString($this->config['miniapp']['appid']));
             return ;
         }
+        if ($receiveData == "?") {
+            $response->setResponse(
+                new NewsResponse($response->getMessageSource(), $this->articles)
+            );
+            return ;
+        }
         $content = $this->splitContent($receiveData);
         $line = false;
         if (is_numeric($content[0])) {
@@ -86,23 +88,22 @@ class TextPlugin extends Plugin
             );
             return ;
         }
-        // $baiDu = new Baidu($this->config['baidu']['secret']);
         $responseMessage = null;
+        $openId = (string) $response->getAttribute("FromUserName");
         try {
             if ($line) {
                 $responseMessage = $this->getLineInfo(
-                    (string)$response->getAttribute("FromUserName"),
+                    $openId,
                     $content[0],
                     isset($content[1]) ? $content[1] : ""
                 );
             } else {
                 $responseMessage = $this->getDirectionTransit(
-                    (string)$response->getAttribute("FromUserName"),
+                    $openId,
                     $content[0],
-                    isset($content[1]) ? $content[1] : $content[0],
+                    $content[1],
                     isset($content[2]) ? $content[2] : ""
                 );
-                // $result = $baiDu->getLineInfo($content[0], isset($content[1]) ? $content[1] : $content[0], isset($content[2]) ? $content[2] : $this->defaultCity);
             }
         } catch (\Exception $e) {
             $response->setResponse(
@@ -111,28 +112,6 @@ class TextPlugin extends Plugin
             return ;
         }
         $response->setResponse($responseMessage);
-//        if ($line) {
-//            foreach ($result as $key => $value) {
-//                if ($key > 1) break;
-//                $message .= '线路: ' . $value['name'] . "\n";
-//                $message .= '时间: ' . $value['time'] . "\n";
-//                $message .= '票价: ' . ($value['price'] / 100) . "元\n";
-//                $message .= '站点: ' . implode(' -> ', $value['station']) . "\n\n";
-//            }
-//        } else {
-//            foreach ($result as $value) {
-//                if (is_string($value)) {
-//                    $message .= ',' . $value . ',';
-//                }
-//                if (is_array($value)) {
-//                    $message .= '[' . $value['start_name'] . '] -> ' .
-//                        '乘坐' . $value['name'] .
-//                        ' -> [' . $value['end_name'] . ']';
-//                }
-//            }
-//        }
-//        $responseMessage = trim($message, ',');
-//        $response->setResponse($responseMessage);
     }
 
     /**
@@ -140,6 +119,7 @@ class TextPlugin extends Plugin
      * @param string $lineName
      * @param string $region
      * @return string
+     * @throws LineException
      */
     private function getLineInfo(string $openId, string $lineName, string $region = ""): string
     {
@@ -159,7 +139,7 @@ class TextPlugin extends Plugin
         $poiLine = json_decode($content, true);
         if ($poiLine['status'] != "1") {
             $this->container->get('logger')->info($content);
-            return "查询出错，未找到符合条件的线路信息";
+            throw new LineException("查询出错，未找到符合条件的线路信息");
         }
         if (count($poiLine['buslines']) < 1) {
             return "未找到符合条件的线路信息";

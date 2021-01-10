@@ -22,12 +22,16 @@ city 缓存城市列表
 EOF;
     exit(0);
 }
+$options = array_splice($arguments, 2);
 switch ($arguments[1]) {
     case "news":
-        news($config);
+        news($config, $options);
         break;
     case "city":
-        city($config);
+        city($config, $options);
+        break;
+    case "line":
+        line($config, $options);
         break;
     default:
         print <<<EOF
@@ -39,9 +43,10 @@ EOF;
 
 /**
  * @param array $config
+ * @param array $options
  * @throws \Psr\Http\Client\ClientExceptionInterface
  */
-function news(array $config)
+function news(array $config, array $options = [])
 {
     $cacheDir = __DIR__ . "/storage/caches";
     $options = [
@@ -54,8 +59,9 @@ function news(array $config)
 
 /**
  * @param array $config
+ * @param array $options
  */
-function city(array $config)
+function city(array $config, array $options = [])
 {
     $map = new AMapService(null);
     $response = $map->city();
@@ -76,4 +82,22 @@ function city(array $config)
         return ;
     }
     $redis->set('cities', json_encode($cities));
+}
+
+/**
+ * @param array $config
+ * @param array $options
+ */
+function line(array $config, array $options = [])
+{
+    $parameters = [
+        'keywords' => $options[0],
+        'city' => $options[1] ?? '330100',
+        'citylimit' => "true",
+        'extensions' => "all",
+        "output" => "json",
+        "offset" => 4,
+    ];
+    $response = (new AMapService())->lineNameSearch($parameters);
+    echo $response->getBody()->getContents();
 }
