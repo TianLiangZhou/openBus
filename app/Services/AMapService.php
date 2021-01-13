@@ -42,14 +42,14 @@ class AMapService
 
     /**
      * AMapService constructor.
-     * @param ContainerInterface|null $container
+     * @param ContainerInterface $container
      */
-    public function __construct(ContainerInterface $container = null)
+    public function __construct(ContainerInterface $container)
     {
-        $this->client = new Client();
-        if (isset($container)) {
-            $this->container = $container;
-        }
+        $this->container = $container;
+        $this->client = $this->container->has('client')
+            ? $this->container->get('client')
+            : new Client();
     }
 
     /**

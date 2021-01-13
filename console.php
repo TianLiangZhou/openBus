@@ -1,21 +1,17 @@
 <?php
 
 use App\Services\AMapService;
-use App\Support\Env;
+use App\Services\IFlytekService;
+use GuzzleHttp\Exception\GuzzleException;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Client\ClientExceptionInterface;
 
 include __DIR__ . "/vendor/autoload.php";
 
-
-
-$dotenv = Dotenv\Dotenv::create(Env::getRepository(), __DIR__);
-$dotenv->safeLoad();
-
-$config = include __DIR__ . "/config/app.php";
-
+$container = include __DIR__ . '/bootstrap/container.php';
 
 $arguments = $argv;
 if (count($arguments) < 2) {
-
     print <<<EOF
 news 打印微信图文列表
 city 缓存城市列表
@@ -25,14 +21,16 @@ EOF;
 $options = array_splice($arguments, 2);
 switch ($arguments[1]) {
     case "news":
-        news($config, $options);
+        news($container, $options);
         break;
     case "city":
-        city($config, $options);
+        city($container, $options);
         break;
     case "line":
-        line($config, $options);
+        line($container, $options);
         break;
+    case "cws":
+        cws($container, $options);
     default:
         print <<<EOF
 未实现的'${arguments[1]}'命令.
@@ -42,12 +40,13 @@ EOF;
 
 
 /**
- * @param array $config
+ * @param ContainerInterface $container
  * @param array $options
- * @throws \Psr\Http\Client\ClientExceptionInterface
+ * @throws ClientExceptionInterface
  */
-function news(array $config, array $options = [])
+function news(ContainerInterface $container, array $options = [])
 {
+    $config = $container->get('config');
     $cacheDir = __DIR__ . "/storage/caches";
     $options = [
         'cacheDir' => $cacheDir,
@@ -58,12 +57,13 @@ function news(array $config, array $options = [])
 }
 
 /**
- * @param array $config
+ * @param ContainerInterface $container
  * @param array $options
  */
-function city(array $config, array $options = [])
+function city(ContainerInterface $container, array $options = [])
 {
-    $map = new AMapService(null);
+    $config = $container->get('config');
+    $map = new AMapService($container);
     $response = $map->city();
     if ($response->getStatusCode() !== 200) {
         print "获取城市列表出错:" . $response->getStatusCode();
@@ -85,10 +85,10 @@ function city(array $config, array $options = [])
 }
 
 /**
- * @param array $config
+ * @param ContainerInterface $container
  * @param array $options
  */
-function line(array $config, array $options = [])
+function line(ContainerInterface $container, array $options = [])
 {
     $parameters = [
         'keywords' => $options[0],
@@ -98,6 +98,18 @@ function line(array $config, array $options = [])
         "output" => "json",
         "offset" => 4,
     ];
-    $response = (new AMapService())->lineNameSearch($parameters);
+    $response = (new AMapService($container))->lineNameSearch($parameters);
     echo $response->getBody()->getContents();
+}
+
+/**
+ * @param ContainerInterface $container
+ * @param array $options
+ * @throws GuzzleException
+ */
+function cws(ContainerInterface $container, array $options = [])
+{
+    $response = (new IFlytekService($container))->participle($options[0]);
+
+    print_r($response);
 }

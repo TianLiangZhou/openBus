@@ -12,6 +12,7 @@ namespace App\Plugin;
 use App\Exception\LineException;
 use App\Services\AMapService;
 use Psr\Container\ContainerInterface;
+use Redis;
 use Shrimp\Event\ResponseEvent;
 use Shrimp\Response\NewsResponse;
 
@@ -40,7 +41,7 @@ class TextPlugin extends Plugin
     {
         parent::__construct($container);
 
-        $this->amapService = new AMapService();
+        $this->amapService = new AMapService($container);
     }
 
     /**
@@ -123,9 +124,11 @@ class TextPlugin extends Plugin
      */
     private function getLineInfo(string $openId, string $lineName, string $region = ""): string
     {
+
+        $city = $this->queryCityCode($region, $openId, $lineName);
         $parameters = [
             'keywords' => $lineName,
-            'city' => $this->queryCityCode($region, $openId),
+            'city' => $city,
             'citylimit' => "true",
             'extensions' => "all",
             "output" => "json",
@@ -195,7 +198,7 @@ class TextPlugin extends Plugin
     {
 
         $parameters['keywords'] = $endPoint;
-        $city = $this->queryCityCode($region, $openId);
+        $city = $this->queryCityCode($region, $openId, $startPoint . $endPoint);
         $startResponse = $this->queryKeywords($startPoint, $city);
         $endResponse =  $this->queryKeywords($endPoint, $city);
         if (empty($startResponse) || empty($endResponse)) {
@@ -311,27 +314,42 @@ class TextPlugin extends Plugin
     /**
      * @param string|null $region
      * @param string $openId
+     * @param string $name
      * @return string
      */
-    private function queryCityCode(?string $region, string $openId): string
+    private function queryCityCode(?string $region, string $openId, string $name): string
     {
-        /**
-         * @var $redis \Redis
-         */
-        $redis = $this->container->get('cache');
         if (empty($region)) {
+            /**
+             * @var $redis Redis
+             */
+            $redis = $this->container->get('cache');
             if (($cityCode = $redis->hGet($openId, 'adcode'))) {
                 return $cityCode;
             }
-            return $this->defaultCityCode;
+            return $this->findCityByName($name);
         }
+        return $this->findCityByName($region);
+
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    private function findCityByName(string $name)
+    {
+        /**
+         * @var $redis Redis
+         */
+        $redis = $this->container->get('cache');
         $cities = $redis->get('cities');
         if (empty($cities)) {
             return $this->defaultCityCode;
         }
         $cities = json_decode($cities, true);
         foreach ($cities as $item) {
-            if (mb_strpos($item['name'], $region) !== false) {
+            if (mb_strpos($name, $item['name']) !== false) {
                 return $item['adcode'];
             }
         }
