@@ -69,7 +69,7 @@ class TextPlugin extends Plugin
             $response->setResponse($this->getOpenMiniappString($this->config['miniapp']['appid']));
             return ;
         }
-        if ($receiveData == "?") {
+        if ($receiveData == "?" || $receiveData == "help" || $receiveData == "帮助") {
             $response->setResponse(
                 new NewsResponse($response->getMessageSource(), $this->articles)
             );
