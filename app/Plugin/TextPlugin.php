@@ -85,7 +85,7 @@ class TextPlugin extends Plugin
         if ($receiveData == '城市' || $receiveData == 'city' || $receiveData == 'cs') {
             $cityName = $this->redis->hGet($openId, "name");
             $message = "当前城市: " . ($cityName ? $cityName : "杭州" . "\n\n");
-            $message .= "你可以回复城市名称来切换默认城市";
+            $message .= "回复城市名称来切换默认城市";
             $response->setResponse($message);
             return ;
         }
