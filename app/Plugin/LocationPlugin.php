@@ -36,6 +36,9 @@ class LocationPlugin extends Plugin
                 if ($regeo->status == "1") {
                     $mData['adcode'] = $regeo->regeocode->addressComponent->adcode;
                     $mData['citycode'] = $regeo->regeocode->addressComponent->citycode;
+                    $mData['name'] = $regeo->regeocode->addressComponent->city
+                        ? $regeo->regeocode->addressComponent->city
+                        : $regeo->regeocode->addressComponent->province;
                 }
             }
             $redis->hMSet($openId, $mData);

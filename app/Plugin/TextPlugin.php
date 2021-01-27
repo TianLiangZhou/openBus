@@ -32,6 +32,10 @@ class TextPlugin extends Plugin
      * @var AMapService
      */
     private AMapService $amapService;
+    /**
+     * @var Redis
+     */
+    private $redis;
 
     /**
      * TextPlugin constructor.
@@ -42,6 +46,8 @@ class TextPlugin extends Plugin
         parent::__construct($container);
 
         $this->amapService = new AMapService($container);
+
+        $this->redis = $this->container->get('cache');
     }
 
     /**
@@ -64,15 +70,23 @@ class TextPlugin extends Plugin
     public function __invoke(ResponseEvent $response)
     {
         // TODO: Implement __invoke() method.
+        $openId = (string) $response->getAttribute("FromUserName");
         $receiveData = trim((string) $response->getAttribute("Content"));
-        if ($receiveData == "小程序") {
+        if ($receiveData == '小程序' || $receiveData == 'xcx') {
             $response->setResponse($this->getOpenMiniappString($this->config['miniapp']['appid']));
             return ;
         }
-        if ($receiveData == "?" || $receiveData == "help" || $receiveData == "帮助") {
+        if ($receiveData == '?' || $receiveData == 'help' || $receiveData == '帮助' || $receiveData == 'bz') {
             $response->setResponse(
                 new NewsResponse($response->getMessageSource(), $this->articles)
             );
+            return ;
+        }
+        if ($receiveData == '城市' || $receiveData == 'city' || $receiveData == 'cs') {
+            $cityName = $this->redis->hGet($openId, "name");
+            $message = "当前城市: " . ($cityName ? $cityName : "杭州" . "\n\n");
+            $message .= "你可以回复城市名称来切换默认城市";
+            $response->setResponse($message);
             return ;
         }
         $content = $this->splitContent($receiveData);
@@ -84,13 +98,26 @@ class TextPlugin extends Plugin
             $line = true;
         }
         if ($line == false && count($content) < 2) {
+            $city = null;
+            if (($cities = $this->getCities())) {
+                foreach ($cities as $item) {
+                    if ($content[0] == $item['name'] || mb_substr($content[0], 0, -1) == $item['name']) {
+                        $city = $item;
+                        break;
+                    }
+                }
+            }
+            if ($city) {
+                $this->redis->hMSet($openId, $city);
+            }
             $response->setResponse(
-                new NewsResponse($response->getMessageSource(), $this->articles)
+                $city
+                    ? "成功切换城市到: " . $city['name']
+                    : new NewsResponse($response->getMessageSource(), $this->articles)
             );
             return ;
         }
         $responseMessage = null;
-        $openId = (string) $response->getAttribute("FromUserName");
         try {
             if ($line) {
                 $responseMessage = $this->getLineInfo(
@@ -125,7 +152,7 @@ class TextPlugin extends Plugin
     private function getLineInfo(string $openId, string $lineName, string $region = ""): string
     {
 
-        $city = $this->queryCityCode($region, $openId, $lineName);
+        $city = $this->queryFromUserCityCode($region, $openId, $lineName);
         $parameters = [
             'keywords' => $lineName,
             'city' => $city,
@@ -196,9 +223,8 @@ class TextPlugin extends Plugin
      */
     private function getDirectionTransit(string $openId, string $startPoint, string $endPoint, string $region = ""): string
     {
-
         $parameters['keywords'] = $endPoint;
-        $city = $this->queryCityCode($region, $openId, $startPoint . $endPoint);
+        $city = $this->queryFromUserCityCode($region, $openId, $startPoint . $endPoint);
         $startResponse = $this->queryKeywords($startPoint, $city);
         $endResponse =  $this->queryKeywords($endPoint, $city);
         if (empty($startResponse) || empty($endResponse)) {
@@ -317,14 +343,10 @@ class TextPlugin extends Plugin
      * @param string $name
      * @return string
      */
-    private function queryCityCode(?string $region, string $openId, string $name): string
+    private function queryFromUserCityCode(?string $region, string $openId, string $name): string
     {
         if (empty($region)) {
-            /**
-             * @var $redis Redis
-             */
-            $redis = $this->container->get('cache');
-            if (($cityCode = $redis->hGet($openId, 'adcode'))) {
+            if (($cityCode = $this->redis->hGet($openId, 'adcode'))) {
                 return $cityCode;
             }
             return $this->findCityByName($name);
@@ -337,17 +359,12 @@ class TextPlugin extends Plugin
      * @param string $name
      * @return string
      */
-    private function findCityByName(string $name)
+    private function findCityByName(string $name): string
     {
-        /**
-         * @var $redis Redis
-         */
-        $redis = $this->container->get('cache');
-        $cities = $redis->get('cities');
+        $cities = $this->getCities();
         if (empty($cities)) {
             return $this->defaultCityCode;
         }
-        $cities = json_decode($cities, true);
         foreach ($cities as $item) {
             if (mb_strpos($name, $item['name']) !== false) {
                 return $item['adcode'];
@@ -383,5 +400,17 @@ class TextPlugin extends Plugin
             $lineId,
             $lineName
         );
+    }
+
+    /**
+     * @return array
+     */
+    private function getCities()
+    {
+        static $cities = null;
+        if ($cities === null) {
+            $cities = ($t = $this->redis->get('cities')) ? json_decode($t, true) : [];
+        }
+        return $cities;
     }
 }
