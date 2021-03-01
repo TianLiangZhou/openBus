@@ -40,9 +40,9 @@ class ApiController extends BaseController
             ],
             [
                 "id" => 3,
-                "appid" => "wxbebb3cdd9b331046",
+                "appid" => "wx2eec5fb00157a603",
                 "name" => "健康码",
-                "path" => "",
+                "path" => "fangkongfuwu/pages/healthCode/step_1/index.html",
                 "icon" => $staticDomain . "/bus/app_3.png",
             ],
             [
