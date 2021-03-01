@@ -53,6 +53,10 @@ class ApiController extends BaseController
                 "icon" => $staticDomain . "/bus/app_4.png",
             ]
         ];
-        return new JsonResponse($apps);
+        $body = [
+            'code' => 0,
+            'data' => $apps,
+        ];
+        return new JsonResponse($body);
     }
 }
