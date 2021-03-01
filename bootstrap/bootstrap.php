@@ -47,4 +47,5 @@ $app->get('/amap/poi_tips_lite', 'amap.controller:poiLite');
 $app->get('/amap/address_to_location', 'amap.controller:locationByAddress');
 $app->get('/amap/ip_to_location', 'amap.controller:locationByIp');
 $app->get('/amap/cities', 'amap.controller:city');
+$app->get('/api/apps', 'api.controller:apps');
 return $app;

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AMapController;
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\BusController;
 use App\Support\Env;
 use DI\ContainerBuilder;
@@ -35,6 +36,9 @@ if (!file_exists($dir . '/' . $containerClass . '.php')) {
         },
         'bus.controller' => function (ContainerInterface $container) {
             return new BusController($container);
+        },
+        'api.controller' => function (ContainerInterface $container) {
+            return new ApiController($container);
         },
         'cache' => function (ContainerInterface $container) {
             $config = $container->get('config');

@@ -17,6 +17,7 @@ return [
         'secret'=> env('WECHAT_SERECT'),
         'token' => env('WECHAT_TOKEN'),
     ],
+    'static_domain' => env('STATIC_DOMAIN'),
     'miniapp' => [
         'appid' => env('MINIAPP_APPID')
     ],
