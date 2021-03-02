@@ -50,7 +50,7 @@ class ApiController extends BaseController
                 "appid" => "",
                 "name" => "站点地图",
                 "path" => "",
-                "icon" => $staticDomain . "/bus/app_4.png",
+                "icon" => $staticDomain . "/bus/app_5.png",
             ]
         ];
         $body = [
