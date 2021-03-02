@@ -29,28 +29,28 @@ class ApiController extends BaseController
                 "appid" => "wxbb58374cdce267a6",
                 "name" => "乘车码",
                 "path" => "",
-                "icon" => $staticDomain . "/bus/app_1.png",
+                "icon" => $staticDomain . "/bus/ccm.png",
             ],
             [
                 "id" => 2,
                 "appid" => "wxaf35009675aa0b2a",
                 "name" => "滴滴",
                 "path" => "",
-                "icon" => $staticDomain . "/bus/app_2.png",
+                "icon" => $staticDomain . "/bus/dd.png",
             ],
             [
                 "id" => 3,
                 "appid" => "wx2eec5fb00157a603",
                 "name" => "健康码",
                 "path" => "fangkongfuwu/pages/healthCode/step_1/index.html",
-                "icon" => $staticDomain . "/bus/app_3.png",
+                "icon" => $staticDomain . "/bus/jkm.png",
             ],
             [
                 "id" => 4,
                 "appid" => "",
                 "name" => "站点地图",
                 "path" => "",
-                "icon" => $staticDomain . "/bus/app_5.png",
+                "icon" => $staticDomain . "/bus/line.png",
             ]
         ];
         $body = [
