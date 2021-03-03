@@ -49,7 +49,7 @@ class ApiController extends BaseController
                 "id" => 4,
                 "appid" => "",
                 "name" => "站点地图",
-                "path" => "",
+                "path" => "../map/map?type=near",
                 "icon" => $staticDomain . "/bus/line.png",
             ]
         ];
