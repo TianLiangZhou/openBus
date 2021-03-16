@@ -228,7 +228,7 @@ class TextPlugin extends Plugin
         $startResponse = $this->queryKeywords($startPoint, $city);
         $endResponse =  $this->queryKeywords($endPoint, $city);
         if (empty($startResponse) || empty($endResponse)) {
-            return "服务发生错误请稍后再试";
+            return "线路查询路规划失败，请确保格式为: 起点_终点_城市";
         }
         $startLocation = $startResponse['pois'][0]['location'];
         $endLocation = $endResponse['pois'][0]['location'];
@@ -242,14 +242,16 @@ class TextPlugin extends Plugin
             'output' => 'json',
         ]);
         if ($transitResponse->getStatusCode() != 200) {
-            return "服务发生错误请稍后再试";
+            return "线路查询路规划失败，请确保格式为: 起点_终点_城市";
         }
-        $r = json_decode($transitResponse->getBody()->getContents(), true);
+        $c = $transitResponse->getBody()->getContents();
+        $r = json_decode($c, true);
         if ($r['status'] != '1') {
+            $this->container->get('logger')->error($c);
             throw new LineException("请求结果发生错误");
         }
         if (empty($r['route']['transits'])) {
-            throw new LineException("不能规化线路");
+            throw new LineException("不能规划线路");
         }
         $route = $r['route']['transits'][0];
         $message = "";
