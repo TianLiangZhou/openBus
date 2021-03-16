@@ -228,7 +228,7 @@ class TextPlugin extends Plugin
         $startResponse = $this->queryKeywords($startPoint, $city);
         $endResponse =  $this->queryKeywords($endPoint, $city);
         if (empty($startResponse) || empty($endResponse)) {
-            return "线路查询路规划失败，请确保格式为: 起点_终点_城市";
+            return "线路规划查询失败，请确保格式为: 起点_终点_城市";
         }
         $startLocation = $startResponse['pois'][0]['location'];
         $endLocation = $endResponse['pois'][0]['location'];
@@ -242,7 +242,7 @@ class TextPlugin extends Plugin
             'output' => 'json',
         ]);
         if ($transitResponse->getStatusCode() != 200) {
-            return "线路查询路规划失败，请确保格式为: 起点_终点_城市";
+            return "线路规划查询失败，请确保格式为: 起点_终点_城市";
         }
         $c = $transitResponse->getBody()->getContents();
         $r = json_decode($c, true);
