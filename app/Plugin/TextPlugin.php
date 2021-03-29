@@ -23,7 +23,7 @@ class TextPlugin extends Plugin
         '$', '#', '@', '&',
         '%', '~', '/', '%',
         '^', '*', '=', '+',
-        '.', ' ', ','
+        '.', ' ', ',',
     ];
 
     private string $defaultCityCode = '330100';
@@ -97,6 +97,17 @@ class TextPlugin extends Plugin
         if ($line == false && preg_match('/[a-z]?[0-9]+([路|线|号线]+)?/is', $content[0])) {
             $line = true;
         }
+        if ($line == false) {
+            // 起点到终点
+            $startEndSplit = explode('到', $content[0]);
+            if ($startEndSplit > 1) {
+                $content = [
+                    $startEndSplit[0],
+                    $startEndSplit[1],
+                    $content[1] ?? "",
+                ];
+            }
+        }
         if ($line == false && count($content) < 2) {
             $city = null;
             if (($cities = $this->getCities())) {
@@ -107,13 +118,17 @@ class TextPlugin extends Plugin
                     }
                 }
             }
-            if ($city) {
+            if ($city !== null) {
                 $this->redis->hMSet($openId, $city);
+                $response->setResponse(
+                    $city
+                        ? "成功切换城市到: " . $city['name']
+                        : new NewsResponse($response->getMessageSource(), $this->articles)
+                );
+                return ;
             }
             $response->setResponse(
-                $city
-                    ? "成功切换城市到: " . $city['name']
-                    : new NewsResponse($response->getMessageSource(), $this->articles)
+                new NewsResponse($response->getMessageSource(), $this->articles)
             );
             return ;
         }
