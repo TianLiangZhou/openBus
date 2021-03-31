@@ -271,7 +271,7 @@ class TextPlugin extends Plugin
             throw new LineException("请求结果发生错误");
         }
         if (empty($r['route']['transits'])) {
-            throw new LineException("不能规划线路。\n当前以\"{$cityName}\"为查询城市，您可以回复市级地名切换城市");
+            return "无法规划此线路。\n当前以\"{$cityName}\"为查询城市，您可以回复市级地名切换城市";
         }
         $route = $r['route']['transits'][0];
         $message = "";
