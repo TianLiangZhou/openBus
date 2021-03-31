@@ -100,7 +100,7 @@ class TextPlugin extends Plugin
         if ($line == false) {
             // 起点到终点
             $startEndSplit = explode('到', $content[0]);
-            if ($startEndSplit > 1) {
+            if (count($startEndSplit) == 2) {
                 $content = [
                     $startEndSplit[0],
                     $startEndSplit[1],
