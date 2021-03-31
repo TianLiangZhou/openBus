@@ -38,6 +38,11 @@ class TextPlugin extends Plugin
     private $redis;
 
     /**
+     * @var string
+     */
+    private string $defaultCityName = '杭州';
+
+    /**
      * TextPlugin constructor.
      * @param ContainerInterface $container
      */
@@ -167,7 +172,7 @@ class TextPlugin extends Plugin
     private function getLineInfo(string $openId, string $lineName, string $region = ""): string
     {
 
-        $city = $this->queryFromUserCityCode($region, $openId, $lineName);
+        [$city, $cityName] = $this->queryFromUserCityCode($region, $openId, $lineName);
         $parameters = [
             'keywords' => $lineName,
             'city' => $city,
@@ -178,16 +183,16 @@ class TextPlugin extends Plugin
         ];
         $response = $this->amapService->lineNameSearch($parameters);
         if ($response->getStatusCode() != 200) {
-            return "服务发生错误请稍后再试";
+            return "服务发生错误请稍后再试。\n当前以\"{$cityName}\"为查询城市，您可以回复市级地名切换城市";
         }
         $content = $response->getBody()->getContents();
         $poiLine = json_decode($content, true);
         if ($poiLine['status'] != "1") {
             $this->container->get('logger')->info($content);
-            throw new LineException("查询出错，未找到符合条件的线路信息");
+            throw new LineException("查询出错，未找到符合条件的线路信息。\n当前以\"{$cityName}\"为查询城市，您可以回复市级地名切换城市");
         }
         if (count($poiLine['buslines']) < 1) {
-            return "未找到符合条件的线路信息";
+            return "未找到符合条件的线路信息。\n当前以\"{$cityName}\"为查询城市，您可以回复市级地名切换城市";
         }
         preg_match('/[0-9]+/is', $lineName, $matches);
         $lineNumber = 0;
@@ -239,11 +244,11 @@ class TextPlugin extends Plugin
     private function getDirectionTransit(string $openId, string $startPoint, string $endPoint, string $region = ""): string
     {
         $parameters['keywords'] = $endPoint;
-        $city = $this->queryFromUserCityCode($region, $openId, $startPoint . $endPoint);
+        [$city, $cityName] = $this->queryFromUserCityCode($region, $openId, $startPoint . $endPoint);
         $startResponse = $this->queryKeywords($startPoint, $city);
         $endResponse =  $this->queryKeywords($endPoint, $city);
         if (empty($startResponse) || empty($endResponse)) {
-            return "线路规划查询失败，请确保格式为: 起点_终点_城市";
+            return "线路规划查询失败，请确保格式为: 起点_终点_城市。\n当前以\"{$cityName}\"为查询城市，您可以回复市级地名切换城市";
         }
         $startLocation = $startResponse['pois'][0]['location'];
         $endLocation = $endResponse['pois'][0]['location'];
@@ -257,7 +262,7 @@ class TextPlugin extends Plugin
             'output' => 'json',
         ]);
         if ($transitResponse->getStatusCode() != 200) {
-            return "线路规划查询失败，请确保格式为: 起点_终点_城市";
+            return "线路规划查询失败，请确保格式为: 起点_终点_城市。\n当前以\"{$cityName}\"为查询城市，您可以回复市级地名切换城市";
         }
         $c = $transitResponse->getBody()->getContents();
         $r = json_decode($c, true);
@@ -266,7 +271,7 @@ class TextPlugin extends Plugin
             throw new LineException("请求结果发生错误");
         }
         if (empty($r['route']['transits'])) {
-            throw new LineException("不能规划线路");
+            throw new LineException("不能规划线路。\n当前以\"{$cityName}\"为查询城市，您可以回复市级地名切换城市");
         }
         $route = $r['route']['transits'][0];
         $message = "";
@@ -358,13 +363,13 @@ class TextPlugin extends Plugin
      * @param string|null $region
      * @param string $openId
      * @param string $name
-     * @return string
+     * @return array
      */
-    private function queryFromUserCityCode(?string $region, string $openId, string $name): string
+    private function queryFromUserCityCode(?string $region, string $openId, string $name): array
     {
         if (empty($region)) {
             if (($cityCode = $this->redis->hGet($openId, 'adcode'))) {
-                return $cityCode;
+                return [$cityCode, $this->redis->hGet($openId, 'name')];
             }
             return $this->findCityByName($name);
         }
@@ -374,20 +379,20 @@ class TextPlugin extends Plugin
 
     /**
      * @param string $name
-     * @return string
+     * @return array
      */
-    private function findCityByName(string $name): string
+    private function findCityByName(string $name): array
     {
         $cities = $this->getCities();
         if (empty($cities)) {
-            return $this->defaultCityCode;
+            return [$this->defaultCityCode, $this->defaultCityName];
         }
         foreach ($cities as $item) {
             if (mb_strpos($name, $item['name']) !== false) {
-                return $item['adcode'];
+                return [$item['adcode'], $item['name']];
             }
         }
-        return $this->defaultCityCode;
+        return [$this->defaultCityCode, $this->defaultCityName];
     }
 
     /**
