@@ -16,7 +16,7 @@ $builder= new ContainerBuilder();
 $builder->enableDefinitionCache();
 $builder->enableCompilation($dir, $containerClass);
 $builder->useAutowiring(false);
-$builder->useAnnotations(false);
+$builder->useAttributes(false);
 if (!file_exists($dir . '/' . $containerClass . '.php')) {
     $dotenv = Dotenv\Dotenv::create(Env::getRepository(), __DIR__ . '/../');
     $dotenv->safeLoad();

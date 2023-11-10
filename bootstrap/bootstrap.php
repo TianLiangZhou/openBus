@@ -48,4 +48,5 @@ $app->get('/amap/address_to_location', 'amap.controller:locationByAddress');
 $app->get('/amap/ip_to_location', 'amap.controller:locationByIp');
 $app->get('/amap/cities', 'amap.controller:city');
 $app->get('/api/apps', 'api.controller:apps');
+$app->get('/api/configuration', 'api.controller:configuration');
 return $app;
