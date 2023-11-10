@@ -33,7 +33,7 @@ class ApiController extends BaseController
         $body = [
             'code' => 0,
             'data' => [
-                'apps' => $this->apps(),
+                'apps' => $this->getApps(),
                 'subway' => $this->getSubway(),
             ],
         ];
@@ -51,15 +51,15 @@ class ApiController extends BaseController
                 'diagram'   => '',
             ],
             "beijing" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => 'https://www.bjsubway.com/mobile/station/xltcx/line1/2013-08-19/4.html',
+                'diagram'   => 'https://www.bjsubway.com/subway/images/lwt.png?1',
             ],
             "changchun" => [
-                'timetable' => '',
+                'timetable' => 'https://mp.weixin.qq.com/s/M5tTOSO0HrYUGVDGGqRTUQ',
                 'diagram'   => '',
             ],
             "changsha" => [
-                'timetable' => '',
+                'timetable' => 'https://mp.weixin.qq.com/s/aosPVB4Mfae_xELqb7BVMw',
                 'diagram'   => '',
             ],
             "changzhou" => [
@@ -67,8 +67,8 @@ class ApiController extends BaseController
                 'diagram'   => '',
             ],
             "chengdu" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => 'https://www.chengdurail.com/ckfw/smbcskb.htm',
+                'diagram'   => 'https://www.chengdurail.com/images/guanwangxianwangtu_00.png',
             ],
             "chongqing" => [
                 'timetable' => '',
@@ -80,23 +80,23 @@ class ApiController extends BaseController
             ],
             "dalian" => [
                 'timetable' => '',
-                'diagram'   => '',
+                'diagram'   => 'https://www.dlmetro.com/hb-air-web/html/aboutus/img/linenet.jpg',
             ],
             "dongguan" => [
-                'timetable' => '',
+                'timetable' => 'https://h5.dongguantong.com.cn/subwayService/index.html#/subway/timeline',
                 'diagram'   => '',
             ],
             "foshan" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => 'https://www.fmetro.net/xlyy/lcskb',
+                'diagram'   => 'https://www.fmetro.net/upload/main/contentmanage/node/image/e3ff611db9574c24a974430f1076ad6c.png',
             ],
             "fuzhou" => [
-                'timetable' => '',
+                'timetable' => 'http://www.fzmtr.com/cms/sitemanage/applicationIndex.shtml?applicationName=fzdt/metroSite&pageName=pageMetroSiteTimes&lineName=1%E5%8F%B7%E7%BA%BF&id=150418954957920000&siteId=110421022978370000',
                 'diagram'   => '',
             ],
             "guangzhou" => [
                 'timetable' => '',
-                'diagram'   => '',
+                'diagram'   => 'https://proxy.alenable.com/subwayMap/static/map_gz_new.jpg',
             ],
             "guiyang" => [
                 'timetable' => '',
