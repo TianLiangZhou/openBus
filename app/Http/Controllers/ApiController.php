@@ -60,19 +60,19 @@ class ApiController extends BaseController
             ],
             "changsha" => [
                 'timetable' => 'https://mp.weixin.qq.com/s/aosPVB4Mfae_xELqb7BVMw',
-                'diagram'   => '',
+                'diagram'   => 'https://t.cncnimg.cn/img/ditie/map/changsha.jpg',
             ],
             "changzhou" => [
                 'timetable' => '',
-                'diagram'   => '',
+                'diagram'   => 'http://www.czmetro.net.cn/Html/images/road/roadImg2.jpg',
             ],
             "chengdu" => [
                 'timetable' => 'https://www.chengdurail.com/ckfw/smbcskb.htm',
                 'diagram'   => 'https://www.chengdurail.com/images/guanwangxianwangtu_00.png',
             ],
             "chongqing" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => 'https://www.cqmetro.cn/app-smbsj.shtml',
+                'diagram'   => 'https://www.cqmetro.cn/imgs/%E7%BA%BF%E8%B7%AF%E5%85%A8.png',
             ],
             "chuzhou" => [
                 'timetable' => '',
@@ -100,21 +100,23 @@ class ApiController extends BaseController
             ],
             "guiyang" => [
                 'timetable' => '',
-                'diagram'   => '',
+                'diagram'   => 'https://www.gyurt.com/materialpub/gdyy/images/metroLineImg.jpg',
             ],
             "haerbin" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => 'https://mp.weixin.qq.com/s/5s8Z4eqmC3EF1zjjozMT9g',
+                'diagram'   => 'https://mmbiz.qpic.cn/mmbiz_jpg/t56pBf0lCibZ6Mwwtm2FUnOh3ju9c2MibptGibiavPz8HLmp6oj4kQsKAlWhKqpUiaVWqVxDwia8licPPvTNiczWk2yFVg/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1',
             ],
             "hangzhou" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => 'https://wx.hzmetro.com/',
+                'diagram'   => 'https://cdnjd.zhangzhengyun.com/hzdt/big.png?v=1',
             ],
             "hefei" => [
+                //https://www.hfgdjt.com/yHNGS6rOOFgAIkO1NiScWlFOJj5i6IduxS%2BScMu6afgc1gXNgWl9n9hYJ_aQrCvk?encrypt=1
                 'timetable' => '',
-                'diagram'   => '',
+                'diagram'   => 'https://www.hfgdjt.com/1ywuKELSO2ahQuWZ/pr/0/r/e00a0e273cb8/YagM72orAMwIpLDWIOTB4jBGDK2z4ophe9Wx8RaBwYpCGDkU3knr4UdAk_nH0VPtuE7UeY75Lw7rYCxe1s01KKNac2XsIcI0ps8KYDL2Hvk%3D/020230407152933_712480.jpg',
             ],
             "huhehaote" => [
+                // https://mp.weixin.qq.com/s/ZW8DBvWtd0S9stX8r0NRxA
                 'timetable' => '',
                 'diagram'   => '',
             ],
@@ -127,32 +129,36 @@ class ApiController extends BaseController
                 'diagram'   => '',
             ],
             "kunming" => [
-                'timetable' => '',
+                'timetable' => 'https://zhcx.km-metro.com/metro-schedule',
                 'diagram'   => '',
             ],
             "lanzhou" => [
+                // https://www.lzgdjt.com/lzgd/mobile/mobile-serve.jsp
                 'timetable' => '',
                 'diagram'   => '',
             ],
             "luoyang" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => 'https://www.lysubway.com.cn/service.html#home3',
+                'diagram'   => 'https://www.lysubway.com.cn/res/image/202109/13/13102016_8366.png',
             ],
             "nanchang" => [
-                'timetable' => '',
+                'timetable' => 'https://guidaometro.banlvit.com/line/metrodate',
                 'diagram'   => '',
             ],
             "nanjing" => [
+                // https://www.njmetro.com.cn/njdtweb/home/go-operate-center.do?tag=yxskb
                 'timetable' => '',
-                'diagram'   => '',
+                'diagram'   => 'https://www.njmetro.com.cn/njdtweb/dtweb/images/map_new.jpg',
             ],
             "nanning" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => 'http://www.nngdjt.com/html/service1b/indexwx.html',
+                'diagram'   => 'http://www.nngdjt.com/images/yyfw/line5_lar.png',
             ],
             "nantong" => [
+                // https://service.ntrailway.com/#/OperatingTime
                 'timetable' => '',
-                'diagram'   => '',
+                //
+                'diagram'   => 'https://service.ntrailway.com/api/ntopen/ignoreGateway/fastDfs/browse?fileName=group1%2FM00%2F00%2F00%2FrBVxA2MruW2ANDSWAA4xHgiuHtc855%5E%5E%5E%5E%E7%BA%BF%E8%B7%AFi%E5%9B%BE.png',
             ],
             "ningbo" => [
                 'timetable' => '',
