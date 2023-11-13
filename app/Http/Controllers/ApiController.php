@@ -45,6 +45,7 @@ class ApiController extends BaseController
      */
     private function getSubway(): array
     {
+        $staticDomain = $this->config['static_domain'];
         return [
             "aomen" => [
                 'timetable' => '',
@@ -56,7 +57,7 @@ class ApiController extends BaseController
             ],
             "changchun" => [
                 'timetable' => 'https://mp.weixin.qq.com/s/M5tTOSO0HrYUGVDGGqRTUQ',
-                'diagram'   => '',
+                'diagram'   => $staticDomain . '/subway/changchun_diagram.jpg',
             ],
             "changsha" => [
                 'timetable' => 'https://mp.weixin.qq.com/s/aosPVB4Mfae_xELqb7BVMw',
@@ -92,7 +93,7 @@ class ApiController extends BaseController
             ],
             "fuzhou" => [
                 'timetable' => 'http://www.fzmtr.com/cms/sitemanage/applicationIndex.shtml?applicationName=fzdt/metroSite&pageName=pageMetroSiteTimes&lineName=1%E5%8F%B7%E7%BA%BF&id=150418954957920000&siteId=110421022978370000',
-                'diagram'   => '',
+                'diagram'   => $staticDomain . '/subway/fuzhou_diagram.jpg',
             ],
             "guangzhou" => [
                 'timetable' => '',
@@ -118,19 +119,19 @@ class ApiController extends BaseController
             "huhehaote" => [
                 // https://mp.weixin.qq.com/s/ZW8DBvWtd0S9stX8r0NRxA
                 'timetable' => '',
-                'diagram'   => '',
+                'diagram'   => $staticDomain . '/subway/huhehaote_diagram.jpg',
             ],
             "jinan" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => $staticDomain . '/subway/jinan.jpg',
+                'diagram'   => $staticDomain . '/subway/jinan.jpg',
             ],
             "jinhua" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => $staticDomain . '/subway/jinhua_timetable.png',
+                'diagram'   => $staticDomain . '/subway/jinhua_diagram.jpg',
             ],
             "kunming" => [
                 'timetable' => 'https://zhcx.km-metro.com/metro-schedule',
-                'diagram'   => '',
+                'diagram'   => $staticDomain . '/subway/kunming_diagram.png',
             ],
             "lanzhou" => [
                 // https://www.lzgdjt.com/lzgd/mobile/mobile-serve.jsp
@@ -143,7 +144,7 @@ class ApiController extends BaseController
             ],
             "nanchang" => [
                 'timetable' => 'https://guidaometro.banlvit.com/line/metrodate',
-                'diagram'   => '',
+                'diagram'   => $staticDomain . '/subway/nanchang_diagram.jpg',
             ],
             "nanjing" => [
                 // https://www.njmetro.com.cn/njdtweb/home/go-operate-center.do?tag=yxskb
@@ -161,19 +162,19 @@ class ApiController extends BaseController
                 'diagram'   => 'https://service.ntrailway.com/api/ntopen/ignoreGateway/fastDfs/browse?fileName=group1%2FM00%2F00%2F00%2FrBVxA2MruW2ANDSWAA4xHgiuHtc855%5E%5E%5E%5E%E7%BA%BF%E8%B7%AFi%E5%9B%BE.png',
             ],
             "ningbo" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => 'https://yywx.ditiego.net/MetroOperation/Station/ScheduledTime?v=1',
+                'diagram'   => $staticDomain . '/subway/ningbo_diagram.png',
             ],
             "qingdao" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => $staticDomain . '/subway/qingdao_timetable.jpg',
+                'diagram'   => 'http://www.qd-metro.com/static/images/qddtxlt.png',
             ],
             "shanghai" => [
                 'timetable' => '',
-                'diagram'   => '',
+                'diagram'   => $staticDomain . '/subway/shanghai_diagram.png',
             ],
             "shaoxing" => [
-                'timetable' => '',
+                'timetable' => $staticDomain . '/subway/shaoxing_timetable.jpg',
                 'diagram'   => '',
             ],
             "shenyang" => [
@@ -182,14 +183,15 @@ class ApiController extends BaseController
             ],
             "shenzhen" => [
                 'timetable' => '',
-                'diagram'   => '',
+                'diagram'   => 'http://www.mtrsz.com.cn/files/20221024/%E6%B7%B1%E5%9C%B3%E7%BA%BF%E7%BD%91%E5%9B%BE2022%E7%89%88xxl0.jpg',
             ],
             "shijiazhuang" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => 'https://mp.weixin.qq.com/s/Fa5w6yRGHFYM9YRL8wWyFA',
+                'diagram'   => 'https://mp.weixin.qq.com/s/Fa5w6yRGHFYM9YRL8wWyFA',
             ],
             "suzhou" => [
-                'timetable' => '',
+                'timetable' => 'http://106.14.198.252:8512/station',
+                // https://www.sz-mtr.com/service/guide/map/mobile_zh.html
                 'diagram'   => '',
             ],
             "taiyuan" => [
@@ -201,40 +203,40 @@ class ApiController extends BaseController
                 'diagram'   => '',
             ],
             "tianjin" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => 'https://static-app.trtpazyz.com/tj-app-h5/train-time/index.html#/',
+                'diagram'   => $staticDomain . '/subway/tianjin_diagram.jpg',
             ],
             "wenzhou" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => $staticDomain . '/subway/wenzhou.timetable.jpg',
+                'diagram'   => $staticDomain . '/subway/wenzhou_diagram.jpg',
             ],
             "wuhan" => [
                 'timetable' => '',
-                'diagram'   => '',
+                'diagram'   => 'https://www.wuhanrt.com/file/image/%E8%BF%90%E8%90%A5%E7%BA%BF%E8%B7%AF%E5%9B%BE(1).jpg',
             ],
             "wuhu" => [
-                'timetable' => '',
+                'timetable' => 'https://mp.weixin.qq.com/s/OY3caFTwFPiH35tbISva1A',
                 'diagram'   => '',
             ],
             "wulumuqi" => [
-                'timetable' => '',
+                'timetable' => $staticDomain . '/subway/wulumuqi_timetable.png',
                 'diagram'   => '',
             ],
             "wuxi" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => 'http://www.wxmetro.net/ws/front/cn/156/content/article.html',
+                'diagram'   => 'http://www.wxmetro.net/cn/img/xian2.jpg',
             ],
             "xiamen" => [
-                'timetable' => '',
-                'diagram'   => '',
+                'timetable' => $staticDomain . '/subway/xiamen_timetable.jpg',
+                'diagram'   => $staticDomain . '/subway/xiamen_diagram.jpg',
             ],
             "xian" => [
-                'timetable' => '',
+                'timetable' => 'https://www.xianrail.com/#/operationService/trainTimeList',
                 'diagram'   => '',
             ],
             "xianggang" => [
                 'timetable' => '',
-                'diagram'   => '',
+                'diagram'   => $staticDomain . '/subway/xianggang_diagram.png',
             ],
             "xiangtan" => [
                 'timetable' => '',
@@ -245,7 +247,7 @@ class ApiController extends BaseController
                 'diagram'   => '',
             ],
             "xuzhou" => [
-                'timetable' => '',
+                'timetable' => $staticDomain . '/subway/xuzhou_timetable.jpg',
                 'diagram'   => '',
             ],
             "zhengzhou" => [
