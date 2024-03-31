@@ -254,6 +254,10 @@ class ApiController extends BaseController
                 'timetable' => '',
                 'diagram'   => '',
             ],
+            "xuchang" => [
+                'timetable' => '',
+                'diagram'   => '',
+            ],
         ];
     }
 
